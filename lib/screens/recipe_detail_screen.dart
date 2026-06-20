@@ -95,36 +95,38 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                   .toList(),
             ),
           ),
-          const SizedBox(height: 16),
-          _SectionCard(
-            title: isBaseIngredient ? 'Cách chuẩn bị' : 'Cách pha chế',
-            icon: Icons.format_list_numbered_rounded,
-            child: Column(
-              children: List.generate(recipe.steps.length, (i) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 7),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 24,
-                        height: 24,
-                        decoration: const BoxDecoration(color: AppColors.coffeeBrown, shape: BoxShape.circle),
-                        alignment: Alignment.center,
-                        child: Text('${i + 1}',
-                            style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(recipe.steps[i],
-                            style: const TextStyle(fontSize: 14.5, color: AppColors.textPrimary, height: 1.4)),
-                      ),
-                    ],
-                  ),
-                );
-              }),
+          if (recipe.steps.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            _SectionCard(
+              title: isBaseIngredient ? 'Cách chuẩn bị' : 'Cách pha chế',
+              icon: Icons.format_list_numbered_rounded,
+              child: Column(
+                children: List.generate(recipe.steps.length, (i) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 7),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 24,
+                          height: 24,
+                          decoration: const BoxDecoration(color: AppColors.coffeeBrown, shape: BoxShape.circle),
+                          alignment: Alignment.center,
+                          child: Text('${i + 1}',
+                              style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(recipe.steps[i],
+                              style: const TextStyle(fontSize: 14.5, color: AppColors.textPrimary, height: 1.4)),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              ),
             ),
-          ),
+          ],
           if (recipe.note.trim().isNotEmpty) ...[
             const SizedBox(height: 16),
             _SectionCard(
