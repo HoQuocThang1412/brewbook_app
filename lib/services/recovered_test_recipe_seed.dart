@@ -34,7 +34,7 @@ List<Recipe> _buildRecoveredRecipes() {
       category: 'Đá xay',
       cup: 'Ly nhựa 500ml',
       status: RecipeStatus.ngungBan,
-      ingredients: const [
+      ingredients: [
         Ingredient(name: 'Bột cacao', quantity: 20, unit: 'g'),
         Ingredient(name: 'Sữa tươi', quantity: 150, unit: 'ml'),
         Ingredient(name: 'Kem béo', quantity: 30, unit: 'ml'),
@@ -56,7 +56,7 @@ List<Recipe> _buildRecoveredRecipes() {
       category: 'Cà phê',
       cup: 'Ly nhựa 350ml',
       status: RecipeStatus.dangBan,
-      ingredients: const [
+      ingredients: [
         Ingredient(name: 'Cà phê phin', quantity: 15, unit: 'g'),
         Ingredient(name: 'Sữa tươi', quantity: 100, unit: 'ml'),
         Ingredient(name: 'Sữa đặc', quantity: 20, unit: 'ml'),
@@ -77,7 +77,7 @@ List<Recipe> _buildRecoveredRecipes() {
       category: 'Trà sữa',
       cup: 'Ly nhựa 450ml',
       status: RecipeStatus.dangBan,
-      ingredients: const [
+      ingredients: [
         Ingredient(name: 'Bột matcha', quantity: 10, unit: 'g'),
         Ingredient(name: 'Sữa tươi', quantity: 200, unit: 'ml'),
         Ingredient(name: 'Đường nước', quantity: 15, unit: 'ml'),
@@ -98,7 +98,7 @@ List<Recipe> _buildRecoveredRecipes() {
       category: 'Cà phê',
       cup: 'Ly nhựa 350ml',
       status: RecipeStatus.dangBan,
-      ingredients: const [
+      ingredients: [
         Ingredient(name: 'Cà phê phin', quantity: 25, unit: 'g'),
         Ingredient(name: 'Sữa đặc', quantity: 30, unit: 'ml'),
         Ingredient(name: 'Đá viên', quantity: 150, unit: 'g'),
