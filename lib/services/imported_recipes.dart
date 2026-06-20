@@ -3,7 +3,7 @@ import 'package:hive/hive.dart';
 import '../models/ingredient.dart';
 import '../models/recipe.dart';
 
-const _excelRecipesSeedVersion = 'excel_recipes_seeded_v3';
+const _excelRecipesSeedVersion = 'excel_recipes_seeded_v4';
 
 String get excelRecipesSeedVersion => _excelRecipesSeedVersion;
 
@@ -123,19 +123,11 @@ List<Recipe> _buildImportedRecipes() {
 }
 
 List<String> _parseSteps(String raw) {
-  final steps = raw
+  return raw
       .split(';')
       .map((step) => step.trim())
       .where((step) => step.isNotEmpty)
       .toList();
-
-  if (steps.isNotEmpty) return steps;
-
-  return const [
-    'Chuẩn bị đầy đủ nguyên liệu theo đúng định lượng.',
-    'Thực hiện pha chế theo quy trình vận hành của quán.',
-    'Kiểm tra hương vị, hoàn thiện ly và phục vụ khách.',
-  ];
 }
 
 List<Ingredient> _parseIngredients(String raw) {
