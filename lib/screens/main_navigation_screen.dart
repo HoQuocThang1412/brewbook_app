@@ -34,23 +34,30 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 280),
-        switchInCurve: Curves.easeOutCubic,
-        switchOutCurve: Curves.easeInCubic,
-        child: KeyedSubtree(
-          key: ValueKey(_index),
-          child: _pages[_index],
-        ),
-      ),
+      body: IndexedStack(index: _index, children: _pages),
       bottomNavigationBar: SafeArea(
         top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(14, 0, 14, 12),
-          child: _PremiumBottomNav(
-            currentIndex: _index,
-            items: _items,
-            onTap: (i) => setState(() => _index = i),
+        child: Container(
+          margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: AppColors.border),
+            boxShadow: const [
+              BoxShadow(color: AppColors.shadow, blurRadius: 18, offset: Offset(0, 8)),
+            ],
+          ),
+          child: Row(
+            children: List.generate(_items.length, (i) {
+              return Expanded(
+                child: _NavItem(
+                  data: _items[i],
+                  selected: _index == i,
+                  onTap: () => setState(() => _index = i),
+                ),
+              );
+            }),
           ),
         ),
       ),
@@ -58,88 +65,46 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   }
 }
 
-class _PremiumBottomNav extends StatelessWidget {
-  final int currentIndex;
-  final List<_NavItemData> items;
-  final ValueChanged<int> onTap;
-
-  const _PremiumBottomNav({
-    required this.currentIndex,
-    required this.items,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 64,
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(26),
-        border: Border.all(color: AppColors.border),
-        boxShadow: const [
-          BoxShadow(
-            color: AppColors.shadow,
-            blurRadius: 24,
-            offset: Offset(0, 12),
-          ),
-        ],
-      ),
-      child: Row(
-        children: List.generate(items.length, (i) {
-          return Expanded(
-            child: _PremiumNavItem(
-              data: items[i],
-              selected: currentIndex == i,
-              onTap: () => onTap(i),
-            ),
-          );
-        }),
-      ),
-    );
-  }
-}
-
-class _PremiumNavItem extends StatelessWidget {
+class _NavItem extends StatelessWidget {
   final _NavItemData data;
   final bool selected;
   final VoidCallback onTap;
 
-  const _PremiumNavItem({
-    required this.data,
-    required this.selected,
-    required this.onTap,
-  });
+  const _NavItem({required this.data, required this.selected, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return Tooltip(
-      message: data.label,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 220),
-          curve: Curves.easeOutCubic,
-          height: double.infinity,
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          decoration: BoxDecoration(
-            color: selected ? AppColors.goldSoft : Colors.transparent,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Center(
-            child: AnimatedScale(
-              scale: selected ? 1.14 : 1,
-              duration: const Duration(milliseconds: 180),
-              curve: Curves.easeOutBack,
-              child: Icon(
-                selected ? data.activeIcon : data.icon,
+    return InkWell(
+      borderRadius: BorderRadius.circular(18),
+      onTap: onTap,
+      child: AnimatedContainer(
+        height: 58,
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOut,
+        decoration: BoxDecoration(
+          color: selected ? AppColors.goldSoft : Colors.transparent,
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              selected ? data.activeIcon : data.icon,
+              color: selected ? AppColors.coffeeBrown : AppColors.textSecondary,
+              size: 23,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              data.label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
                 color: selected ? AppColors.coffeeBrown : AppColors.textSecondary,
-                size: 25,
+                fontSize: 10.5,
+                fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
