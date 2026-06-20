@@ -10,7 +10,18 @@ import 'recipe_detail_screen.dart';
 import 'recipe_form_screen.dart';
 
 class RecipeListScreen extends StatefulWidget {
-  const RecipeListScreen({super.key});
+  final String? initialCategory;
+  final String? initialStatus;
+  final bool showCategorySummary;
+  final String? pageTitle;
+
+  const RecipeListScreen({
+    super.key,
+    this.initialCategory,
+    this.initialStatus,
+    this.showCategorySummary = false,
+    this.pageTitle,
+  });
 
   @override
   State<RecipeListScreen> createState() => _RecipeListScreenState();
@@ -18,13 +29,24 @@ class RecipeListScreen extends StatefulWidget {
 
 class _RecipeListScreenState extends State<RecipeListScreen> {
   String _searchText = '';
-  String? _selectedCategory; // null = Tất cả
-  String? _selectedStatus; // null = Tất cả
+  String? _selectedCategory;
+  String? _selectedStatus;
+  bool _showCategorySummary = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedCategory = widget.initialCategory;
+    _selectedStatus = widget.initialStatus;
+    _showCategorySummary = widget.showCategorySummary;
+  }
 
   void _onDelete(Recipe recipe) async {
     final confirmed = await showConfirmDeleteDialog(context, itemName: recipe.name);
     if (!confirmed) return;
+
     await HiveService.deleteRecipe(recipe.id);
+
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Đã xoá "${recipe.name}" thành công')),
@@ -36,6 +58,7 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
       context,
       MaterialPageRoute(builder: (_) => const RecipeFormScreen()),
     );
+
     if (result == true && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Đã thêm công thức mới thành công')),
@@ -48,6 +71,7 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
       context,
       MaterialPageRoute(builder: (_) => RecipeFormScreen(recipeId: recipe.id)),
     );
+
     if (result == true && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Đã cập nhật công thức thành công')),
@@ -62,11 +86,34 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
     );
   }
 
+  Map<String, int> _getCategoryCounts(List<Recipe> recipes) {
+    final result = <String, int>{};
+
+    for (final recipe in recipes) {
+      final category = recipe.category.trim();
+      if (category.isEmpty) continue;
+      result[category] = (result[category] ?? 0) + 1;
+    }
+
+    return result;
+  }
+
+  void _clearFilters() {
+    setState(() {
+      _searchText = '';
+      _selectedCategory = null;
+      _selectedStatus = null;
+      _showCategorySummary = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final title = widget.pageTitle ?? 'Công thức pha chế';
+
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('Công thức pha chế')),
+      appBar: AppBar(title: Text(title)),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _onAdd,
         icon: const Icon(Icons.add_rounded),
@@ -75,17 +122,21 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
       body: ValueListenableBuilder(
         valueListenable: HiveService.listenable(),
         builder: (context, Box<Recipe> box, _) {
+          final allRecipes = HiveService.getAllRecipes();
           final categories = HiveService.getAllCategories();
+          final categoryCounts = _getCategoryCounts(allRecipes);
 
-          List<Recipe> recipes = HiveService.getAllRecipes();
+          List<Recipe> recipes = allRecipes;
 
           if (_searchText.trim().isNotEmpty) {
             final q = _searchText.trim().toLowerCase();
             recipes = recipes.where((r) => r.name.toLowerCase().contains(q)).toList();
           }
+
           if (_selectedCategory != null) {
             recipes = recipes.where((r) => r.category == _selectedCategory).toList();
           }
+
           if (_selectedStatus != null) {
             recipes = recipes.where((r) => r.status == _selectedStatus).toList();
           }
@@ -95,14 +146,15 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
                 child: TextField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Tìm kiếm theo tên món...',
-                    prefixIcon: const Icon(Icons.search_rounded, color: AppColors.textSecondary),
+                    prefixIcon: Icon(Icons.search_rounded, color: AppColors.textSecondary),
                     isDense: true,
                   ),
                   onChanged: (v) => setState(() => _searchText = v),
                 ),
               ),
+
               SizedBox(
                 height: 42,
                 child: ListView(
@@ -113,19 +165,42 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
                       label: 'Nhóm món',
                       value: _selectedCategory,
                       items: categories,
-                      onChanged: (v) => setState(() => _selectedCategory = v),
+                      onChanged: (v) => setState(() {
+                        _selectedCategory = v;
+                        _showCategorySummary = v == null ? _showCategorySummary : false;
+                      }),
                     ),
                     const SizedBox(width: 10),
                     _FilterDropdown(
                       label: 'Trạng thái',
                       value: _selectedStatus,
                       items: RecipeStatus.all,
-                      onChanged: (v) => setState(() => _selectedStatus = v),
+                      onChanged: (v) => setState(() {
+                        _selectedStatus = v;
+                      }),
                     ),
+                    const SizedBox(width: 10),
+                    _ClearFilterButton(onTap: _clearFilters),
                   ],
                 ),
               ),
+
+              if (_showCategorySummary) ...[
+                const SizedBox(height: 12),
+                _CategorySummary(
+                  categoryCounts: categoryCounts,
+                  selectedCategory: _selectedCategory,
+                  onSelected: (category) {
+                    setState(() {
+                      _selectedCategory = category;
+                      _showCategorySummary = false;
+                    });
+                  },
+                ),
+              ],
+
               const SizedBox(height: 8),
+
               Expanded(
                 child: recipes.isEmpty
                     ? const EmptyState(message: 'Không tìm thấy công thức phù hợp')
@@ -134,6 +209,7 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
                         itemCount: recipes.length,
                         itemBuilder: (context, i) {
                           final r = recipes[i];
+
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 12),
                             child: RecipeCard(
@@ -170,6 +246,7 @@ class _FilterDropdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool active = value != null;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
@@ -180,15 +257,142 @@ class _FilterDropdown extends StatelessWidget {
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String?>(
           value: value,
-          hint: Text(label, style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
-          icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 18, color: AppColors.coffeeBrown),
-          style: const TextStyle(fontSize: 13, color: AppColors.coffeeDark, fontWeight: FontWeight.w600),
+          hint: Text(
+            label,
+            style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+          ),
+          icon: const Icon(
+            Icons.keyboard_arrow_down_rounded,
+            size: 18,
+            color: AppColors.coffeeBrown,
+          ),
+          style: const TextStyle(
+            fontSize: 13,
+            color: AppColors.coffeeDark,
+            fontWeight: FontWeight.w600,
+          ),
           items: [
-            DropdownMenuItem<String?>(value: null, child: Text('Tất cả $label')),
-            ...items.map((e) => DropdownMenuItem<String?>(value: e, child: Text(e))),
+            DropdownMenuItem<String?>(
+              value: null,
+              child: Text('Tất cả $label'),
+            ),
+            ...items.map(
+              (e) => DropdownMenuItem<String?>(
+                value: e,
+                child: Text(e),
+              ),
+            ),
           ],
           onChanged: onChanged,
         ),
+      ),
+    );
+  }
+}
+
+class _ClearFilterButton extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _ClearFilterButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: AppColors.surface,
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: const Row(
+            children: [
+              Icon(Icons.refresh_rounded, size: 17, color: AppColors.coffeeBrown),
+              SizedBox(width: 5),
+              Text(
+                'Bỏ lọc',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: AppColors.coffeeDark,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CategorySummary extends StatelessWidget {
+  final Map<String, int> categoryCounts;
+  final String? selectedCategory;
+  final ValueChanged<String> onSelected;
+
+  const _CategorySummary({
+    required this.categoryCounts,
+    required this.selectedCategory,
+    required this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (categoryCounts.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final entries = categoryCounts.entries.toList()
+      ..sort((a, b) => a.key.compareTo(b.key));
+
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Danh sách nhóm món',
+            style: TextStyle(
+              color: AppColors.coffeeDark,
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: entries.map((entry) {
+              final active = selectedCategory == entry.key;
+
+              return ChoiceChip(
+                selected: active,
+                label: Text('${entry.key} (${entry.value})'),
+                onSelected: (_) => onSelected(entry.key),
+                selectedColor: AppColors.goldSoft,
+                backgroundColor: AppColors.surfaceAlt,
+                labelStyle: TextStyle(
+                  color: active ? AppColors.coffeeDark : AppColors.textSecondary,
+                  fontWeight: FontWeight.w600,
+                ),
+                side: BorderSide(
+                  color: active ? AppColors.gold : AppColors.border,
+                ),
+              );
+            }).toList(),
+          ),
+        ],
       ),
     );
   }
