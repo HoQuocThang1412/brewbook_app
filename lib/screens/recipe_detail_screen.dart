@@ -106,7 +106,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                           const SizedBox(width: 10),
                           Expanded(
                             child: Text(
-                              '${ing.name} — ${_formatNumber(ing.quantity)} ${ing.unit}',
+                              _formatIngredient(ing.name, ing.quantity, ing.unit),
                               style: const TextStyle(fontSize: 14.5, color: AppColors.textPrimary),
                             ),
                           ),
@@ -163,6 +163,19 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
         ],
       ),
     );
+  }
+
+  String _formatIngredient(String name, double quantity, String unit) {
+    final cleanUnit = unit.trim();
+
+    if (quantity <= 0) {
+      return cleanUnit.isEmpty ? name : '$name — $cleanUnit';
+    }
+
+    final quantityText = _formatNumber(quantity);
+    if (cleanUnit.isEmpty) return '$name — $quantityText';
+
+    return '$name — $quantityText $cleanUnit';
   }
 
   String _formatNumber(double v) {
