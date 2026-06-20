@@ -52,83 +52,62 @@ class DashboardScreen extends StatelessWidget {
             return RefreshIndicator(
               onRefresh: () async {},
               child: ListView(
-                padding: const EdgeInsets.fromLTRB(18, 10, 18, 104),
+                padding: const EdgeInsets.fromLTRB(18, 14, 18, 104),
                 children: [
-                  const FadeSlideIn(child: _TopBar()),
-                  const SizedBox(height: 18),
-                  const FadeSlideIn(
-                    delay: Duration(milliseconds: 80),
-                    child: _HeroPanel(),
-                  ),
+                  const FadeSlideIn(child: _DashboardHeader()),
                   const SizedBox(height: 16),
                   FadeSlideIn(
-                    delay: const Duration(milliseconds: 140),
-                    child: _StatusPanel(
-                      total: total,
-                      dangBan: dangBan,
-                      groups: groups,
-                    ),
+                    delay: const Duration(milliseconds: 70),
+                    child: _OverviewCard(total: total, active: dangBan, groups: groups),
                   ),
-                  const SizedBox(height: 18),
-                  const _SectionTitle(title: 'Truy cập nhanh', subtitle: 'Chạm để mở chức năng'),
+                  const SizedBox(height: 22),
+                  const _SectionHeader(title: 'Chức năng chính', subtitle: 'Các mục dùng thường xuyên'),
                   const SizedBox(height: 12),
                   LayoutBuilder(
                     builder: (context, constraints) {
-                      final wide = constraints.maxWidth > 620;
+                      final wide = constraints.maxWidth >= 720;
                       return GridView.count(
                         crossAxisCount: wide ? 4 : 2,
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         mainAxisSpacing: 12,
                         crossAxisSpacing: 12,
-                        childAspectRatio: wide ? 1.08 : 1.02,
+                        childAspectRatio: wide ? 1.18 : 1.08,
                         children: [
-                          FadeSlideIn(
-                            delay: const Duration(milliseconds: 180),
-                            child: _FeatureCard(
-                              title: 'Công thức',
-                              subtitle: '$total món đang lưu',
-                              icon: Icons.local_cafe_rounded,
-                              onTap: () => _openRecipeList(context, title: 'Tất cả công thức'),
-                            ),
+                          _FeatureCard(
+                            icon: Icons.local_cafe_rounded,
+                            title: 'Công thức',
+                            subtitle: 'Quản lý món nước',
+                            onTap: () => _openRecipeList(context, title: 'Tất cả công thức'),
                           ),
-                          FadeSlideIn(
-                            delay: const Duration(milliseconds: 230),
-                            child: _FeatureCard(
-                              title: 'Checklist',
-                              subtitle: 'Chụp báo cáo theo ca',
-                              icon: Icons.fact_check_rounded,
-                              onTap: () => _openPage(context, const ReportChecklistScreen()),
-                            ),
+                          _FeatureCard(
+                            icon: Icons.fact_check_rounded,
+                            title: 'Checklist',
+                            subtitle: 'Chụp báo cáo theo ca',
+                            onTap: () => _openPage(context, const ReportChecklistScreen()),
                           ),
-                          FadeSlideIn(
-                            delay: const Duration(milliseconds: 280),
-                            child: _FeatureCard(
-                              title: 'Quy trình',
-                              subtitle: 'Hướng dẫn nhân viên',
-                              icon: Icons.route_rounded,
-                              onTap: () => _openPage(context, const WorkProcessScreen()),
-                            ),
+                          _FeatureCard(
+                            icon: Icons.assignment_ind_rounded,
+                            title: 'Quy trình',
+                            subtitle: 'Hướng dẫn nhân viên',
+                            onTap: () => _openPage(context, const WorkProcessScreen()),
                           ),
-                          FadeSlideIn(
-                            delay: const Duration(milliseconds: 330),
-                            child: _FeatureCard(
+                          _FeatureCard(
+                            icon: Icons.category_rounded,
+                            title: 'Nhóm món',
+                            subtitle: '$groups nhóm hiện có',
+                            onTap: () => _openRecipeList(
+                              context,
+                              showCategorySummary: true,
                               title: 'Nhóm món',
-                              subtitle: '$groups nhóm hiện có',
-                              icon: Icons.category_rounded,
-                              onTap: () => _openRecipeList(
-                                context,
-                                showCategorySummary: true,
-                                title: 'Nhóm món',
-                              ),
                             ),
                           ),
                         ],
                       );
                     },
                   ),
-                  const SizedBox(height: 18),
-                  const _SectionTitle(title: 'Thống kê quán', subtitle: 'Tình trạng công thức hiện tại'),
+                  const SizedBox(height: 22),
+                  const _SectionHeader(title: 'Tổng quan dữ liệu', subtitle: 'Theo dõi nhanh tình trạng món'),
                   const SizedBox(height: 12),
                   GridView.count(
                     crossAxisCount: 2,
@@ -136,9 +115,9 @@ class DashboardScreen extends StatelessWidget {
                     physics: const NeverScrollableScrollPhysics(),
                     mainAxisSpacing: 12,
                     crossAxisSpacing: 12,
-                    childAspectRatio: 1.18,
+                    childAspectRatio: 1.25,
                     children: [
-                      PressScale(
+                      _TapCard(
                         onTap: () => _openRecipeList(context, title: 'Tất cả công thức'),
                         child: StatCard(
                           title: 'Tổng công thức',
@@ -147,33 +126,33 @@ class DashboardScreen extends StatelessWidget {
                           accentColor: AppColors.coffeeBrown,
                         ),
                       ),
-                      PressScale(
+                      _TapCard(
                         onTap: () => _openRecipeList(
                           context,
                           status: RecipeStatus.dangBan,
                           title: 'Món đang bán',
                         ),
                         child: StatCard(
-                          title: 'Món đang bán',
+                          title: 'Đang bán',
                           value: '$dangBan',
-                          icon: Icons.local_fire_department_rounded,
+                          icon: Icons.check_circle_rounded,
                           accentColor: AppColors.success,
                         ),
                       ),
-                      PressScale(
+                      _TapCard(
                         onTap: () => _openRecipeList(
                           context,
                           showCategorySummary: true,
                           title: 'Nhóm món',
                         ),
                         child: StatCard(
-                          title: 'Số nhóm món',
+                          title: 'Nhóm món',
                           value: '$groups',
                           icon: Icons.grid_view_rounded,
                           accentColor: AppColors.gold,
                         ),
                       ),
-                      PressScale(
+                      _TapCard(
                         onTap: () => _openRecipeList(
                           context,
                           status: RecipeStatus.ngungBan,
@@ -182,7 +161,7 @@ class DashboardScreen extends StatelessWidget {
                         child: StatCard(
                           title: 'Ngưng bán',
                           value: '$ngungBan',
-                          icon: Icons.do_not_disturb_alt_rounded,
+                          icon: Icons.pause_circle_rounded,
                           accentColor: AppColors.danger,
                         ),
                       ),
@@ -198,107 +177,112 @@ class DashboardScreen extends StatelessWidget {
   }
 }
 
-class _TopBar extends StatelessWidget {
-  const _TopBar();
+class _DashboardHeader extends StatelessWidget {
+  const _DashboardHeader();
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         Container(
-          width: 40,
-          height: 40,
+          width: 44,
+          height: 44,
           decoration: BoxDecoration(
             color: AppColors.surface,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(color: AppColors.border),
+            boxShadow: const [BoxShadow(color: AppColors.shadow, blurRadius: 12, offset: Offset(0, 5))],
           ),
-          child: const Icon(Icons.coffee_maker_rounded, color: AppColors.coffeeBrown),
+          child: const Icon(Icons.coffee_rounded, color: AppColors.coffeeBrown),
         ),
         const SizedBox(width: 12),
         const Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('BrewBook', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
+              Text(
+                'BrewBook',
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, letterSpacing: -0.5),
+              ),
               SizedBox(height: 2),
-              Text('Premium workspace', style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+              Text(
+                'Quản lý pha chế gọn gàng hơn mỗi ca',
+                style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+              ),
             ],
           ),
         ),
         IconButton(
+          tooltip: 'Làm mới',
           onPressed: () {},
-          icon: const Icon(Icons.notifications_none_rounded),
+          icon: const Icon(Icons.refresh_rounded),
         ),
       ],
     );
   }
 }
 
-class _HeroPanel extends StatelessWidget {
-  const _HeroPanel();
+class _OverviewCard extends StatelessWidget {
+  final int total;
+  final int active;
+  final int groups;
+
+  const _OverviewCard({required this.total, required this.active, required this.groups});
 
   @override
   Widget build(BuildContext context) {
+    final ratio = total == 0 ? 0.0 : active / total;
+    final percent = (ratio * 100).round();
+
     return Container(
-      height: 250,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(26),
         border: Border.all(color: AppColors.border),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF303433), Color(0xFF171A1A)],
-        ),
-        boxShadow: const [
-          BoxShadow(color: AppColors.shadow, blurRadius: 28, offset: Offset(0, 14)),
-        ],
+        boxShadow: const [BoxShadow(color: AppColors.shadow, blurRadius: 18, offset: Offset(0, 8))],
       ),
-      child: Stack(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Positioned(
-            right: -20,
-            bottom: -26,
-            child: Icon(
-              Icons.local_cafe_rounded,
-              size: 190,
-              color: AppColors.textPrimary.withOpacity(0.08),
-            ),
-          ),
-          Positioned(
-            right: 10,
-            top: 30,
-            child: Container(
-              width: 108,
-              height: 108,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.coffeeBrown.withOpacity(0.16),
-              ),
-              child: const Icon(Icons.coffee_rounded, size: 58, color: AppColors.coffeeBrown),
-            ),
-          ),
-          const Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
             children: [
-              _StatusPill(),
-              Spacer(),
-              Text(
-                'BREW\nREADY',
-                style: TextStyle(
-                  fontSize: 50,
-                  height: 0.9,
-                  letterSpacing: -2.2,
-                  fontWeight: FontWeight.w900,
-                  color: AppColors.textPrimary,
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppColors.goldSoft,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: const Text(
+                  'Tổng quan hôm nay',
+                  style: TextStyle(color: AppColors.coffeeBrown, fontWeight: FontWeight.w800, fontSize: 12),
                 ),
               ),
-              SizedBox(height: 12),
-              Text(
-                'Quản lý công thức, checklist báo cáo và quy trình ca làm trong một giao diện gọn đẹp.',
-                style: TextStyle(color: AppColors.textSecondary, height: 1.35),
-              ),
+              const Spacer(),
+              const Icon(Icons.insights_rounded, color: AppColors.coffeeBrown),
+            ],
+          ),
+          const SizedBox(height: 18),
+          const Text(
+            'Sẵn sàng cho ca làm',
+            style: TextStyle(fontSize: 25, fontWeight: FontWeight.w900, letterSpacing: -0.7),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '$active món đang bán trong tổng $total công thức. Dữ liệu được chia thành $groups nhóm món.',
+            style: const TextStyle(color: AppColors.textSecondary, height: 1.45),
+          ),
+          const SizedBox(height: 18),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(999),
+            child: LinearProgressIndicator(value: ratio, minHeight: 8),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Text('$percent% món đang bán', style: const TextStyle(fontWeight: FontWeight.w800)),
+              const Spacer(),
+              Text('$groups nhóm', style: const TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.w700)),
             ],
           ),
         ],
@@ -307,71 +291,18 @@ class _HeroPanel extends StatelessWidget {
   }
 }
 
-class _StatusPill extends StatelessWidget {
-  const _StatusPill();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: AppColors.goldSoft,
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: const Text(
-        'Check Status',
-        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.coffeeBrown),
-      ),
-    );
-  }
-}
-
-class _StatusPanel extends StatelessWidget {
-  final int total;
-  final int dangBan;
-  final int groups;
-
-  const _StatusPanel({required this.total, required this.dangBan, required this.groups});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.insights_rounded, color: AppColors.coffeeBrown),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              '$dangBan / $total món đang bán',
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
-            ),
-          ),
-          Text('$groups nhóm', style: const TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.w700)),
-        ],
-      ),
-    );
-  }
-}
-
-class _SectionTitle extends StatelessWidget {
+class _SectionHeader extends StatelessWidget {
   final String title;
   final String subtitle;
 
-  const _SectionTitle({required this.title, required this.subtitle});
+  const _SectionHeader({required this.title, required this.subtitle});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
+        Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: -0.2)),
         const SizedBox(height: 3),
         Text(subtitle, style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
       ],
@@ -380,39 +311,48 @@ class _SectionTitle extends StatelessWidget {
 }
 
 class _FeatureCard extends StatelessWidget {
+  final IconData icon;
   final String title;
   final String subtitle;
-  final IconData icon;
   final VoidCallback onTap;
 
   const _FeatureCard({
+    required this.icon,
     required this.title,
     required this.subtitle,
-    required this.icon,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return PressScale(
+    return _TapCard(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.card,
-          borderRadius: BorderRadius.circular(24),
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(22),
           border: Border.all(color: AppColors.border),
+          boxShadow: const [BoxShadow(color: AppColors.shadow, blurRadius: 14, offset: Offset(0, 6))],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, color: AppColors.textPrimary, size: 30),
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: AppColors.surfaceAlt,
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Icon(icon, color: AppColors.coffeeBrown),
+            ),
             const Spacer(),
             Text(
               title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 5),
             Text(
@@ -423,6 +363,26 @@ class _FeatureCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _TapCard extends StatelessWidget {
+  final Widget child;
+  final VoidCallback onTap;
+
+  const _TapCard({required this.child, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(22),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(22),
+        onTap: onTap,
+        child: child,
       ),
     );
   }
