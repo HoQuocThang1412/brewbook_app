@@ -6,30 +6,34 @@ import 'status_badge.dart';
 class RecipeCard extends StatelessWidget {
   final Recipe recipe;
   final VoidCallback onView;
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
 
   const RecipeCard({
     super.key,
     required this.recipe,
     required this.onView,
-    required this.onEdit,
-    required this.onDelete,
+    this.onEdit,
+    this.onDelete,
   });
+
+  bool get _canManage => onEdit != null || onDelete != null;
 
   @override
   Widget build(BuildContext context) {
+    final isBaseIngredient = recipe.category == 'Nguyên liệu nền';
+
     return InkWell(
       onTap: onView,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(22),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(22),
           border: Border.all(color: AppColors.border),
           boxShadow: const [
-            BoxShadow(color: AppColors.shadow, blurRadius: 12, offset: Offset(0, 5)),
+            BoxShadow(color: AppColors.shadow, blurRadius: 14, offset: Offset(0, 6)),
           ],
         ),
         child: Column(
@@ -39,13 +43,16 @@ class RecipeCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 48,
-                  height: 48,
+                  width: 50,
+                  height: 50,
                   decoration: BoxDecoration(
-                    color: AppColors.goldSoft,
-                    borderRadius: BorderRadius.circular(14),
+                    color: isBaseIngredient ? AppColors.successSoft : AppColors.goldSoft,
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  child: const Icon(Icons.local_cafe_rounded, color: AppColors.coffeeBrown),
+                  child: Icon(
+                    isBaseIngredient ? Icons.science_outlined : Icons.local_cafe_rounded,
+                    color: isBaseIngredient ? AppColors.success : AppColors.coffeeBrown,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -55,17 +62,19 @@ class RecipeCard extends StatelessWidget {
                       Text(
                         recipe.name,
                         style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.coffeeDark,
+                          fontSize: 16.5,
+                          height: 1.18,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: -0.25,
+                          color: AppColors.textPrimary,
                         ),
-                        maxLines: 1,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 5),
                       Text(
                         '${recipe.category} · ${recipe.cup}',
-                        style: const TextStyle(fontSize: 12.5, color: AppColors.textSecondary),
+                        style: const TextStyle(fontSize: 12.5, color: AppColors.textSecondary, fontWeight: FontWeight.w500),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -75,34 +84,42 @@ class RecipeCard extends StatelessWidget {
                 StatusBadge(status: recipe.status),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 13),
             Row(
               children: [
                 Icon(Icons.list_alt_rounded, size: 16, color: AppColors.textSecondary.withOpacity(0.8)),
-                const SizedBox(width: 4),
+                const SizedBox(width: 5),
                 Text(
                   '${recipe.ingredients.length} nguyên liệu · ${recipe.steps.length} bước',
-                  style: const TextStyle(fontSize: 12.5, color: AppColors.textSecondary),
+                  style: const TextStyle(fontSize: 12.5, color: AppColors.textSecondary, fontWeight: FontWeight.w600),
                 ),
+                const Spacer(),
+                const Text(
+                  'Xem chi tiết',
+                  style: TextStyle(color: AppColors.coffeeBrown, fontSize: 12.5, fontWeight: FontWeight.w800),
+                ),
+                const SizedBox(width: 4),
+                const Icon(Icons.chevron_right_rounded, size: 18, color: AppColors.coffeeBrown),
               ],
             ),
-            const SizedBox(height: 12),
-            const Divider(height: 1, color: AppColors.border),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                _ActionButton(icon: Icons.visibility_outlined, label: 'Xem', onTap: onView),
-                const SizedBox(width: 6),
-                _ActionButton(icon: Icons.edit_outlined, label: 'Sửa', onTap: onEdit),
-                const SizedBox(width: 6),
-                _ActionButton(
-                  icon: Icons.delete_outline_rounded,
-                  label: 'Xoá',
-                  onTap: onDelete,
-                  color: AppColors.danger,
-                ),
-              ],
-            ),
+            if (_canManage) ...[
+              const SizedBox(height: 12),
+              const Divider(height: 1, color: AppColors.border),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  _ActionButton(icon: Icons.visibility_outlined, label: 'Xem', onTap: onView),
+                  if (onEdit != null) ...[
+                    const SizedBox(width: 6),
+                    _ActionButton(icon: Icons.edit_outlined, label: 'Sửa', onTap: onEdit!),
+                  ],
+                  if (onDelete != null) ...[
+                    const SizedBox(width: 6),
+                    _ActionButton(icon: Icons.delete_outline_rounded, label: 'Xoá', onTap: onDelete!, color: AppColors.danger),
+                  ],
+                ],
+              ),
+            ],
           ],
         ),
       ),
