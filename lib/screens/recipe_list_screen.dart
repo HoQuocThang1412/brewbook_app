@@ -4,10 +4,8 @@ import '../models/recipe.dart';
 import '../services/hive_service.dart';
 import '../theme/app_colors.dart';
 import '../widgets/recipe_card.dart';
-import '../widgets/confirm_delete_dialog.dart';
 import '../widgets/empty_state.dart';
 import 'recipe_detail_screen.dart';
-import 'recipe_form_screen.dart';
 
 class RecipeListScreen extends StatefulWidget {
   final String? initialCategory;
@@ -39,44 +37,6 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
     _selectedCategory = widget.initialCategory;
     _selectedStatus = widget.initialStatus;
     _showCategorySummary = widget.showCategorySummary;
-  }
-
-  void _onDelete(Recipe recipe) async {
-    final confirmed = await showConfirmDeleteDialog(context, itemName: recipe.name);
-    if (!confirmed) return;
-
-    await HiveService.deleteRecipe(recipe.id);
-
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Đã xoá "${recipe.name}" thành công')),
-    );
-  }
-
-  void _onAdd() async {
-    final result = await Navigator.push<bool>(
-      context,
-      MaterialPageRoute(builder: (_) => const RecipeFormScreen()),
-    );
-
-    if (result == true && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Đã thêm công thức mới thành công')),
-      );
-    }
-  }
-
-  void _onEdit(Recipe recipe) async {
-    final result = await Navigator.push<bool>(
-      context,
-      MaterialPageRoute(builder: (_) => RecipeFormScreen(recipeId: recipe.id)),
-    );
-
-    if (result == true && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Đã cập nhật công thức thành công')),
-      );
-    }
   }
 
   void _onView(Recipe recipe) {
@@ -114,11 +74,6 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(title: Text(title)),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _onAdd,
-        icon: const Icon(Icons.add_rounded),
-        label: const Text('Thêm công thức'),
-      ),
       body: ValueListenableBuilder(
         valueListenable: HiveService.listenable(),
         builder: (context, Box<Recipe> box, _) {
@@ -130,7 +85,9 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
 
           if (_searchText.trim().isNotEmpty) {
             final q = _searchText.trim().toLowerCase();
-            recipes = recipes.where((r) => r.name.toLowerCase().contains(q)).toList();
+            recipes = recipes.where((r) {
+              return r.name.toLowerCase().contains(q) || r.category.toLowerCase().contains(q);
+            }).toList();
           }
 
           if (_selectedCategory != null) {
@@ -144,10 +101,10 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
           return Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                padding: const EdgeInsets.fromLTRB(20, 10, 20, 8),
                 child: TextField(
                   decoration: const InputDecoration(
-                    hintText: 'Tìm kiếm theo tên món...',
+                    hintText: 'Tìm theo tên món hoặc nhóm món...',
                     prefixIcon: Icon(Icons.search_rounded, color: AppColors.textSecondary),
                     isDense: true,
                   ),
@@ -159,7 +116,7 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
                 height: 42,
                 child: ListView(
                   scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   children: [
                     _FilterDropdown(
                       label: 'Nhóm món',
@@ -205,7 +162,7 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
                 child: recipes.isEmpty
                     ? const EmptyState(message: 'Không tìm thấy công thức phù hợp')
                     : ListView.builder(
-                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 90),
+                        padding: const EdgeInsets.fromLTRB(20, 4, 20, 90),
                         itemCount: recipes.length,
                         itemBuilder: (context, i) {
                           final r = recipes[i];
@@ -215,8 +172,6 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
                             child: RecipeCard(
                               recipe: r,
                               onView: () => _onView(r),
-                              onEdit: () => _onEdit(r),
-                              onDelete: () => _onDelete(r),
                             ),
                           );
                         },
@@ -351,7 +306,7 @@ class _CategorySummary extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.symmetric(horizontal: 16),
+      margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: AppColors.surface,
