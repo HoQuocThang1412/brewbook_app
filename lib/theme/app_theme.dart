@@ -40,7 +40,7 @@ class AppTheme {
         color: AppColors.textPrimary,
         fontSize: 16,
         height: 1.25,
-        fontWeight: FontWeight.w750,
+        fontWeight: FontWeight.w700,
         letterSpacing: -0.2,
       ),
       bodyMedium: const TextStyle(
@@ -127,7 +127,7 @@ class AppTheme {
       chipTheme: base.chipTheme.copyWith(
         backgroundColor: AppColors.surfaceAlt,
         selectedColor: AppColors.goldSoft,
-        labelStyle: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w650),
+        labelStyle: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
         side: const BorderSide(color: AppColors.border),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       ),
