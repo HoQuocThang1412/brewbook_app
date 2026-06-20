@@ -4,8 +4,6 @@ import '../models/recipe.dart';
 import '../services/hive_service.dart';
 import '../theme/app_colors.dart';
 import '../widgets/status_badge.dart';
-import '../widgets/confirm_delete_dialog.dart';
-import 'recipe_form_screen.dart';
 
 class RecipeDetailScreen extends StatefulWidget {
   final String recipeId;
@@ -27,38 +25,11 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
       );
     }
 
+    final isBaseIngredient = recipe.category == 'Nguyên liệu nền';
+
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text('Chi tiết công thức'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit_outlined),
-            tooltip: 'Sửa',
-            onPressed: () async {
-              final result = await Navigator.push<bool>(
-                context,
-                MaterialPageRoute(builder: (_) => RecipeFormScreen(recipeId: recipe.id)),
-              );
-              if (result == true && mounted) setState(() {});
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete_outline_rounded, color: AppColors.danger),
-            tooltip: 'Xoá',
-            onPressed: () async {
-              final confirmed = await showConfirmDeleteDialog(context, itemName: recipe.name);
-              if (!confirmed) return;
-              await HiveService.deleteRecipe(recipe.id);
-              if (!mounted) return;
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Đã xoá "${recipe.name}" thành công')),
-              );
-            },
-          ),
-        ],
-      ),
+      appBar: AppBar(title: const Text('Chi tiết công thức')),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
         children: [
@@ -68,8 +39,15 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
               Container(
                 width: 64,
                 height: 64,
-                decoration: BoxDecoration(color: AppColors.goldSoft, borderRadius: BorderRadius.circular(18)),
-                child: const Icon(Icons.local_cafe_rounded, color: AppColors.coffeeBrown, size: 30),
+                decoration: BoxDecoration(
+                  color: isBaseIngredient ? AppColors.successSoft : AppColors.goldSoft,
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: Icon(
+                  isBaseIngredient ? Icons.science_outlined : Icons.local_cafe_rounded,
+                  color: isBaseIngredient ? AppColors.success : AppColors.coffeeBrown,
+                  size: 30,
+                ),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -89,7 +67,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
           _InfoChipsRow(recipe: recipe),
           const SizedBox(height: 22),
           _SectionCard(
-            title: 'Nguyên liệu',
+            title: isBaseIngredient ? 'Nguyên liệu chuẩn bị' : 'Nguyên liệu',
             icon: Icons.shopping_basket_outlined,
             child: Column(
               children: recipe.ingredients
@@ -106,7 +84,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                           const SizedBox(width: 10),
                           Expanded(
                             child: Text(
-                              '${ing.name} — ${_formatNumber(ing.quantity)} ${ing.unit}',
+                              _formatIngredient(ing.name, ing.quantity, ing.unit),
                               style: const TextStyle(fontSize: 14.5, color: AppColors.textPrimary),
                             ),
                           ),
@@ -117,36 +95,38 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                   .toList(),
             ),
           ),
-          const SizedBox(height: 16),
-          _SectionCard(
-            title: 'Cách pha chế',
-            icon: Icons.format_list_numbered_rounded,
-            child: Column(
-              children: List.generate(recipe.steps.length, (i) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 7),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 24,
-                        height: 24,
-                        decoration: const BoxDecoration(color: AppColors.coffeeBrown, shape: BoxShape.circle),
-                        alignment: Alignment.center,
-                        child: Text('${i + 1}',
-                            style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(recipe.steps[i],
-                            style: const TextStyle(fontSize: 14.5, color: AppColors.textPrimary, height: 1.4)),
-                      ),
-                    ],
-                  ),
-                );
-              }),
+          if (recipe.steps.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            _SectionCard(
+              title: isBaseIngredient ? 'Cách chuẩn bị' : 'Cách pha chế',
+              icon: Icons.format_list_numbered_rounded,
+              child: Column(
+                children: List.generate(recipe.steps.length, (i) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 7),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 24,
+                          height: 24,
+                          decoration: const BoxDecoration(color: AppColors.coffeeBrown, shape: BoxShape.circle),
+                          alignment: Alignment.center,
+                          child: Text('${i + 1}',
+                              style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(recipe.steps[i],
+                              style: const TextStyle(fontSize: 14.5, color: AppColors.textPrimary, height: 1.4)),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              ),
             ),
-          ),
+          ],
           if (recipe.note.trim().isNotEmpty) ...[
             const SizedBox(height: 16),
             _SectionCard(
@@ -163,6 +143,19 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
         ],
       ),
     );
+  }
+
+  String _formatIngredient(String name, double quantity, String unit) {
+    final cleanUnit = unit.trim();
+
+    if (quantity <= 0) {
+      return cleanUnit.isEmpty ? name : '$name — $cleanUnit';
+    }
+
+    final quantityText = _formatNumber(quantity);
+    if (cleanUnit.isEmpty) return '$name — $quantityText';
+
+    return '$name — $quantityText $cleanUnit';
   }
 
   String _formatNumber(double v) {

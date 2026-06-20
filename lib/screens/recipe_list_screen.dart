@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../models/recipe.dart';
 import '../services/hive_service.dart';
+import '../services/recipe_excel_export_service.dart';
 import '../theme/app_colors.dart';
-import '../widgets/recipe_card.dart';
 import '../widgets/confirm_delete_dialog.dart';
+import '../widgets/recipe_card.dart';
 import '../widgets/empty_state.dart';
 import 'recipe_detail_screen.dart';
 import 'recipe_form_screen.dart';
+
+const _baseIngredientCategory = 'Nguyên liệu nền';
 
 class RecipeListScreen extends StatefulWidget {
   final String? initialCategory;
@@ -32,36 +35,33 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
   String? _selectedCategory;
   String? _selectedStatus;
   bool _showCategorySummary = false;
+  bool _showBaseIngredients = false;
+  bool _isExporting = false;
 
   @override
   void initState() {
     super.initState();
-    _selectedCategory = widget.initialCategory;
+    _showBaseIngredients = widget.initialCategory == _baseIngredientCategory;
+    _selectedCategory = _showBaseIngredients ? null : widget.initialCategory;
     _selectedStatus = widget.initialStatus;
     _showCategorySummary = widget.showCategorySummary;
-  }
-
-  void _onDelete(Recipe recipe) async {
-    final confirmed = await showConfirmDeleteDialog(context, itemName: recipe.name);
-    if (!confirmed) return;
-
-    await HiveService.deleteRecipe(recipe.id);
-
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Đã xoá "${recipe.name}" thành công')),
-    );
   }
 
   void _onAdd() async {
     final result = await Navigator.push<bool>(
       context,
-      MaterialPageRoute(builder: (_) => const RecipeFormScreen()),
+      MaterialPageRoute(
+        builder: (_) => RecipeFormScreen(
+          initialCategory: _showBaseIngredients ? _baseIngredientCategory : null,
+        ),
+      ),
     );
 
     if (result == true && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Đã thêm công thức mới thành công')),
+        SnackBar(
+          content: Text(_showBaseIngredients ? 'Đã thêm nguyên liệu nền thành công' : 'Đã thêm công thức mới thành công'),
+        ),
       );
     }
   }
@@ -79,11 +79,43 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
     }
   }
 
+  void _onDelete(Recipe recipe) async {
+    final confirmed = await showConfirmDeleteDialog(context, itemName: recipe.name);
+    if (!confirmed) return;
+
+    await HiveService.deleteRecipe(recipe.id);
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Đã xoá "${recipe.name}" thành công')),
+    );
+  }
+
   void _onView(Recipe recipe) {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => RecipeDetailScreen(recipeId: recipe.id)),
     );
+  }
+
+  Future<void> _onExportExcel() async {
+    if (_isExporting) return;
+
+    setState(() => _isExporting = true);
+    try {
+      await exportRecipesToExcel();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Đã xuất Excel thành công')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Chưa xuất được Excel: $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _isExporting = false);
+    }
   }
 
   Map<String, int> _getCategoryCounts(List<Recipe> recipes) {
@@ -98,9 +130,29 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
     return result;
   }
 
+  List<String> _getCategories(List<Recipe> recipes) {
+    final categories = recipes
+        .map((r) => r.category.trim())
+        .where((category) => category.isNotEmpty)
+        .toSet()
+        .toList()
+      ..sort();
+    return categories;
+  }
+
   void _clearFilters() {
     setState(() {
       _searchText = '';
+      _selectedCategory = null;
+      _selectedStatus = null;
+      _showCategorySummary = false;
+    });
+  }
+
+  void _changeSection(bool showBaseIngredients) {
+    if (_showBaseIngredients == showBaseIngredients) return;
+    setState(() {
+      _showBaseIngredients = showBaseIngredients;
       _selectedCategory = null;
       _selectedStatus = null;
       _showCategorySummary = false;
@@ -113,24 +165,44 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(
+        title: Text(title),
+        actions: [
+          IconButton(
+            tooltip: 'Xuất Excel',
+            onPressed: _isExporting ? null : _onExportExcel,
+            icon: _isExporting
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.file_download_outlined),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _onAdd,
         icon: const Icon(Icons.add_rounded),
-        label: const Text('Thêm công thức'),
+        label: Text(_showBaseIngredients ? 'Thêm nguyên liệu' : 'Thêm công thức'),
       ),
       body: ValueListenableBuilder(
         valueListenable: HiveService.listenable(),
         builder: (context, Box<Recipe> box, _) {
           final allRecipes = HiveService.getAllRecipes();
-          final categories = HiveService.getAllCategories();
-          final categoryCounts = _getCategoryCounts(allRecipes);
+          final baseRecipes = allRecipes.where((r) => r.category == _baseIngredientCategory).toList();
+          final drinkRecipes = allRecipes.where((r) => r.category != _baseIngredientCategory).toList();
+          final sectionRecipes = _showBaseIngredients ? baseRecipes : drinkRecipes;
+          final categories = _getCategories(sectionRecipes);
+          final categoryCounts = _getCategoryCounts(sectionRecipes);
 
-          List<Recipe> recipes = allRecipes;
+          List<Recipe> recipes = sectionRecipes;
 
           if (_searchText.trim().isNotEmpty) {
             final q = _searchText.trim().toLowerCase();
-            recipes = recipes.where((r) => r.name.toLowerCase().contains(q)).toList();
+            recipes = recipes.where((r) {
+              return r.name.toLowerCase().contains(q) || r.category.toLowerCase().contains(q);
+            }).toList();
           }
 
           if (_selectedCategory != null) {
@@ -144,14 +216,24 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
           return Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                padding: const EdgeInsets.fromLTRB(20, 10, 20, 8),
                 child: TextField(
-                  decoration: const InputDecoration(
-                    hintText: 'Tìm kiếm theo tên món...',
-                    prefixIcon: Icon(Icons.search_rounded, color: AppColors.textSecondary),
+                  decoration: InputDecoration(
+                    hintText: _showBaseIngredients ? 'Tìm nguyên liệu nền...' : 'Tìm theo tên món hoặc nhóm món...',
+                    prefixIcon: const Icon(Icons.search_rounded, color: AppColors.textSecondary),
                     isDense: true,
                   ),
                   onChanged: (v) => setState(() => _searchText = v),
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+                child: _RecipeSectionTabs(
+                  showBaseIngredients: _showBaseIngredients,
+                  drinkCount: drinkRecipes.length,
+                  baseCount: baseRecipes.length,
+                  onChanged: _changeSection,
                 ),
               ),
 
@@ -159,10 +241,10 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
                 height: 42,
                 child: ListView(
                   scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   children: [
                     _FilterDropdown(
-                      label: 'Nhóm món',
+                      label: _showBaseIngredients ? 'Loại nguyên liệu' : 'Nhóm món',
                       value: _selectedCategory,
                       items: categories,
                       onChanged: (v) => setState(() {
@@ -205,7 +287,7 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
                 child: recipes.isEmpty
                     ? const EmptyState(message: 'Không tìm thấy công thức phù hợp')
                     : ListView.builder(
-                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 90),
+                        padding: const EdgeInsets.fromLTRB(20, 4, 20, 96),
                         itemCount: recipes.length,
                         itemBuilder: (context, i) {
                           final r = recipes[i];
@@ -225,6 +307,102 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
             ],
           );
         },
+      ),
+    );
+  }
+}
+
+class _RecipeSectionTabs extends StatelessWidget {
+  final bool showBaseIngredients;
+  final int drinkCount;
+  final int baseCount;
+  final ValueChanged<bool> onChanged;
+
+  const _RecipeSectionTabs({
+    required this.showBaseIngredients,
+    required this.drinkCount,
+    required this.baseCount,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceAlt,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Row(
+        children: [
+          _TabButton(
+            label: 'Món pha chế',
+            count: drinkCount,
+            icon: Icons.local_cafe_rounded,
+            selected: !showBaseIngredients,
+            onTap: () => onChanged(false),
+          ),
+          const SizedBox(width: 4),
+          _TabButton(
+            label: 'Nguyên liệu nền',
+            count: baseCount,
+            icon: Icons.science_outlined,
+            selected: showBaseIngredients,
+            onTap: () => onChanged(true),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TabButton extends StatelessWidget {
+  final String label;
+  final int count;
+  final IconData icon;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _TabButton({
+    required this.label,
+    required this.count,
+    required this.icon,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Material(
+        color: selected ? AppColors.surface : Colors.transparent,
+        borderRadius: BorderRadius.circular(14),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon, size: 17, color: selected ? AppColors.coffeeBrown : AppColors.textSecondary),
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Text(
+                    '$label ($count)',
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+                      color: selected ? AppColors.coffeeDark : AppColors.textSecondary,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -351,7 +529,7 @@ class _CategorySummary extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.symmetric(horizontal: 16),
+      margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: AppColors.surface,

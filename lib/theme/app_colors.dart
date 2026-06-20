@@ -1,29 +1,29 @@
 import 'package:flutter/material.dart';
 
-/// Bảng màu chủ đạo cho BrewBook: trắng - kem - nâu cà phê - vàng nhạt.
 class AppColors {
   AppColors._();
 
-  static const Color background = Color(0xFFFBF6EE); // nền kem sáng
-  static const Color surface = Color(0xFFFFFFFF); // trắng cho card
-  static const Color surfaceAlt = Color(0xFFF4EAD9); // kem đậm hơn cho nền phụ
+  static const Color background = Color(0xFFFAF7F2);
+  static const Color surface = Color(0xFFFFFCF8);
+  static const Color surfaceAlt = Color(0xFFF4EDE4);
+  static const Color card = Color(0xFFFFFFFF);
 
-  static const Color coffeeDark = Color(0xFF3E2B1F); // nâu cà phê đậm - tiêu đề
-  static const Color coffeeBrown = Color(0xFF6F4A30); // nâu cà phê chính
-  static const Color coffeeLight = Color(0xFFB58863); // nâu nhạt
+  static const Color coffeeDark = Color(0xFF2A211B);
+  static const Color coffeeBrown = Color(0xFF76523A);
+  static const Color coffeeLight = Color(0xFFD6B999);
 
-  static const Color gold = Color(0xFFD8A24A); // vàng nhạt - nhấn
-  static const Color goldSoft = Color(0xFFF1D9A6); // vàng rất nhạt - nền chip
+  static const Color gold = Color(0xFFC9912B);
+  static const Color goldSoft = Color(0xFFFFF0CF);
 
-  static const Color textPrimary = Color(0xFF3B2A1E);
-  static const Color textSecondary = Color(0xFF8C7763);
-  static const Color textOnDark = Color(0xFFFBF6EE);
+  static const Color textPrimary = Color(0xFF2A211B);
+  static const Color textSecondary = Color(0xFF7E6F61);
+  static const Color textOnDark = Color(0xFFFFFFFF);
 
-  static const Color success = Color(0xFF6E8B5C);
-  static const Color successSoft = Color(0xFFE3ECDB);
-  static const Color danger = Color(0xFFBD5A45);
-  static const Color dangerSoft = Color(0xFFF6E1DB);
+  static const Color success = Color(0xFF3F8B57);
+  static const Color successSoft = Color(0xFFE9F5ED);
+  static const Color danger = Color(0xFFC85D4A);
+  static const Color dangerSoft = Color(0xFFF9E8E3);
 
-  static const Color border = Color(0xFFE8DCC8);
-  static const Color shadow = Color(0x1A3E2B1F);
+  static const Color border = Color(0xFFEDE2D5);
+  static const Color shadow = Color(0x12000000);
 }

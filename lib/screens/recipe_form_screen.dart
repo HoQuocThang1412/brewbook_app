@@ -12,7 +12,9 @@ const _uuid = Uuid();
 class RecipeFormScreen extends StatefulWidget {
   /// Nếu null -> chế độ Thêm mới. Nếu có giá trị -> chế độ Sửa.
   final String? recipeId;
-  const RecipeFormScreen({super.key, this.recipeId});
+  final String? initialCategory;
+
+  const RecipeFormScreen({super.key, this.recipeId, this.initialCategory});
 
   @override
   State<RecipeFormScreen> createState() => _RecipeFormScreenState();
@@ -47,6 +49,7 @@ class _RecipeFormScreenState extends State<RecipeFormScreen> {
   final List<TextEditingController> _stepCtrls = [];
 
   bool get isEditing => widget.recipeId != null;
+  bool get _isBaseIngredient => _categoryCtrl.text.trim() == 'Nguyên liệu nền';
   Recipe? _existing;
 
   @override
@@ -55,8 +58,8 @@ class _RecipeFormScreenState extends State<RecipeFormScreen> {
     _existing = widget.recipeId != null ? HiveService.getRecipe(widget.recipeId!) : null;
 
     _nameCtrl = TextEditingController(text: _existing?.name ?? '');
-    _categoryCtrl = TextEditingController(text: _existing?.category ?? '');
-    _cupCtrl = TextEditingController(text: _existing?.cup ?? '');
+    _categoryCtrl = TextEditingController(text: _existing?.category ?? widget.initialCategory ?? '');
+    _cupCtrl = TextEditingController(text: _existing?.cup ?? (widget.initialCategory == 'Nguyên liệu nền' ? 'Công thức nền' : ''));
     _noteCtrl = TextEditingController(text: _existing?.note ?? '');
     _status = _existing?.status ?? RecipeStatus.dangBan;
 
@@ -176,33 +179,38 @@ class _RecipeFormScreenState extends State<RecipeFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final title = isEditing
+        ? (_isBaseIngredient ? 'Sửa nguyên liệu nền' : 'Sửa công thức')
+        : (_isBaseIngredient ? 'Thêm nguyên liệu nền' : 'Thêm công thức mới');
+
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: Text(isEditing ? 'Sửa công thức' : 'Thêm công thức mới')),
+      appBar: AppBar(title: Text(title)),
       body: Form(
         key: _formKey,
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 110),
           children: [
-            _Label('Tên món'),
+            _Label(_isBaseIngredient ? 'Tên nguyên liệu nền' : 'Tên món'),
             TextFormField(
               controller: _nameCtrl,
-              decoration: const InputDecoration(hintText: 'Ví dụ: Cà phê sữa đá'),
-              validator: (v) => (v == null || v.trim().isEmpty) ? 'Vui lòng nhập tên món' : null,
+              decoration: InputDecoration(hintText: _isBaseIngredient ? 'Ví dụ: Kem muối' : 'Ví dụ: Cà phê sữa đá'),
+              validator: (v) => (v == null || v.trim().isEmpty) ? 'Vui lòng nhập tên' : null,
             ),
             const SizedBox(height: 16),
             _Label('Nhóm món'),
             TextFormField(
               controller: _categoryCtrl,
-              decoration: const InputDecoration(hintText: 'Ví dụ: Cà phê, Trà sữa, Đá xay...'),
+              decoration: const InputDecoration(hintText: 'Ví dụ: Cà phê, Trà Thanh nhiệt, Nguyên liệu nền...'),
               validator: (v) => (v == null || v.trim().isEmpty) ? 'Vui lòng nhập nhóm món' : null,
+              onChanged: (_) => setState(() {}),
             ),
             const SizedBox(height: 16),
-            _Label('Ly sử dụng'),
+            _Label(_isBaseIngredient ? 'Loại công thức' : 'Ly sử dụng'),
             TextFormField(
               controller: _cupCtrl,
-              decoration: const InputDecoration(hintText: 'Ví dụ: Ly nhựa 350ml'),
-              validator: (v) => (v == null || v.trim().isEmpty) ? 'Vui lòng nhập loại ly' : null,
+              decoration: InputDecoration(hintText: _isBaseIngredient ? 'Ví dụ: Công thức nền' : 'Ví dụ: Ly nhựa 350ml'),
+              validator: (v) => (v == null || v.trim().isEmpty) ? 'Vui lòng nhập thông tin' : null,
             ),
             const SizedBox(height: 16),
             _Label('Trạng thái'),
@@ -231,7 +239,7 @@ class _RecipeFormScreenState extends State<RecipeFormScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _Label('Nguyên liệu'),
+                _Label(_isBaseIngredient ? 'Nguyên liệu chuẩn bị' : 'Nguyên liệu'),
                 TextButton.icon(
                   onPressed: _addIngredientRow,
                   icon: const Icon(Icons.add_rounded, size: 18),
@@ -253,7 +261,7 @@ class _RecipeFormScreenState extends State<RecipeFormScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _Label('Các bước pha chế'),
+                _Label(_isBaseIngredient ? 'Cách chuẩn bị' : 'Các bước pha chế'),
                 TextButton.icon(
                   onPressed: _addStepRow,
                   icon: const Icon(Icons.add_rounded, size: 18),
@@ -299,7 +307,7 @@ class _RecipeFormScreenState extends State<RecipeFormScreen> {
               child: ElevatedButton.icon(
                 onPressed: _save,
                 icon: const Icon(Icons.check_rounded),
-                label: const Text('Lưu công thức'),
+                label: Text(_isBaseIngredient ? 'Lưu nguyên liệu' : 'Lưu công thức'),
               ),
             ),
           ],
