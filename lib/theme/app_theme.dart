@@ -17,14 +17,48 @@ class AppTheme {
       ),
       scaffoldBackgroundColor: AppColors.background,
       fontFamily: 'Roboto',
+      visualDensity: VisualDensity.standard,
     );
 
     final inputBorder = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(18),
       borderSide: const BorderSide(color: AppColors.border),
     );
 
+    final textTheme = base.textTheme.apply(
+      bodyColor: AppColors.textPrimary,
+      displayColor: AppColors.textPrimary,
+    ).copyWith(
+      titleLarge: const TextStyle(
+        color: AppColors.textPrimary,
+        fontSize: 22,
+        height: 1.16,
+        fontWeight: FontWeight.w800,
+        letterSpacing: -0.45,
+      ),
+      titleMedium: const TextStyle(
+        color: AppColors.textPrimary,
+        fontSize: 16,
+        height: 1.25,
+        fontWeight: FontWeight.w750,
+        letterSpacing: -0.2,
+      ),
+      bodyMedium: const TextStyle(
+        color: AppColors.textPrimary,
+        fontSize: 14,
+        height: 1.38,
+        fontWeight: FontWeight.w500,
+      ),
+      bodySmall: const TextStyle(
+        color: AppColors.textSecondary,
+        fontSize: 12.5,
+        height: 1.35,
+        fontWeight: FontWeight.w500,
+      ),
+    );
+
     return base.copyWith(
+      textTheme: textTheme,
       appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.background,
         foregroundColor: AppColors.textPrimary,
@@ -33,22 +67,19 @@ class AppTheme {
         centerTitle: false,
         titleTextStyle: TextStyle(
           color: AppColors.textPrimary,
-          fontSize: 20,
+          fontSize: 22,
           fontWeight: FontWeight.w800,
-          letterSpacing: -0.2,
+          height: 1.15,
+          letterSpacing: -0.45,
         ),
         iconTheme: IconThemeData(color: AppColors.textPrimary),
-      ),
-      textTheme: base.textTheme.apply(
-        bodyColor: AppColors.textPrimary,
-        displayColor: AppColors.textPrimary,
       ),
       cardTheme: CardThemeData(
         color: AppColors.surface,
         elevation: 0,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(22),
           side: const BorderSide(color: AppColors.border, width: 1),
         ),
       ),
@@ -59,10 +90,10 @@ class AppTheme {
         border: inputBorder,
         enabledBorder: inputBorder,
         focusedBorder: inputBorder.copyWith(
-          borderSide: const BorderSide(color: AppColors.coffeeBrown, width: 1.5),
+          borderSide: const BorderSide(color: AppColors.coffeeBrown, width: 1.4),
         ),
-        hintStyle: const TextStyle(color: AppColors.textSecondary),
-        labelStyle: const TextStyle(color: AppColors.textSecondary),
+        hintStyle: const TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.w500),
+        labelStyle: const TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.w500),
         prefixIconColor: AppColors.textSecondary,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -70,7 +101,7 @@ class AppTheme {
           backgroundColor: AppColors.coffeeBrown,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
           elevation: 0,
         ),
@@ -80,7 +111,7 @@ class AppTheme {
           foregroundColor: AppColors.coffeeBrown,
           side: const BorderSide(color: AppColors.border),
           padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
         ),
       ),
@@ -91,12 +122,14 @@ class AppTheme {
         backgroundColor: AppColors.coffeeBrown,
         foregroundColor: Colors.white,
         elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
       ),
       chipTheme: base.chipTheme.copyWith(
         backgroundColor: AppColors.surfaceAlt,
         selectedColor: AppColors.goldSoft,
-        labelStyle: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
+        labelStyle: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w650),
         side: const BorderSide(color: AppColors.border),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: AppColors.surface,
@@ -107,9 +140,9 @@ class AppTheme {
       ),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: AppColors.textPrimary,
-        contentTextStyle: const TextStyle(color: Colors.white),
+        contentTextStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: AppColors.surface,
@@ -117,14 +150,15 @@ class AppTheme {
           color: AppColors.textPrimary,
           fontSize: 20,
           fontWeight: FontWeight.w800,
+          letterSpacing: -0.3,
         ),
-        contentTextStyle: const TextStyle(color: AppColors.textSecondary, height: 1.35),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        contentTextStyle: const TextStyle(color: AppColors.textSecondary, height: 1.38),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
       ),
       popupMenuTheme: PopupMenuThemeData(
         color: AppColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        textStyle: const TextStyle(color: AppColors.textPrimary),
+        textStyle: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
       ),
       dividerTheme: const DividerThemeData(color: AppColors.border),
       progressIndicatorTheme: const ProgressIndicatorThemeData(
