@@ -17,9 +17,7 @@ class BrewBookApp extends StatelessWidget {
     return MaterialApp(
       title: 'BrewBook',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.darkTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.dark,
+      theme: AppTheme.lightTheme,
       home: const MainNavigationScreen(),
     );
   }
