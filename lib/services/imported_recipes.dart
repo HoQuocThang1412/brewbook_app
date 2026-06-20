@@ -3,7 +3,7 @@ import 'package:hive/hive.dart';
 import '../models/ingredient.dart';
 import '../models/recipe.dart';
 
-const _excelRecipesSeedVersion = 'excel_recipes_seeded_v7';
+const _excelRecipesSeedVersion = 'excel_recipes_seeded_v8';
 
 String get excelRecipesSeedVersion => _excelRecipesSeedVersion;
 
@@ -14,10 +14,10 @@ Nguyên liệu nền|Kem tươi|richs=120 ml; Sữa tươi không đường=60 m
 Nguyên liệu nền|Nước đường|Đường cát=750 g; Nước sôi=500 ml|Đun hoặc khuấy nước nóng với đường đến khi tan hoàn toàn.; Để nguội, lọc nếu cần.; Cho vào chai sạch và bảo quản nơi mát.
 Nguyên liệu nền|Trà lài|Trà lài=20 g; Nước sôi=500 ml; Đá=500 g|trán trà bằng nước sôi - Ủ trà lài với nước sôi 15p; Lọc bỏ xác trà. bằng ray và khăn lọc; Làm lạnh nhanh bằng đá để giữ hương trà.
 Cà phê|Cà phê muối|Phin pha sẵn=35 ml; Sữa tươi=20 ml; Sữa đặc=20 ml; Kem muối=2-4 muỗng|Cho sữa đặc và sữa tươi vào ly.; Cho cà phê phin vào và khuấy nhẹ và cho đá vào; Phủ kem muối lên trên. - rắc bột cacao phủ kem muối
-Cà phê|Cà phê đen ép nóng|Cafe ép=45 ml; Đường vàng=4 gr|Chiết xuất cà phê ép.; Cho đường gói vào đĩa; Phục vụ nóng.
-Cà phê|Cà phê sữa ép nóng|Cafe ép=45 ml; Sữa đặc=20 ml|Cho sữa đặc vào ly.; Chiết xuất 45ml cà phê ép nóng.; Rót cà phê lên sữa đặc.; Khuấy đều trước khi phục vụ.
-Cà phê|Cà phê đen đá ép|Cafe ép=45 ml; Đường vàng=4 gr (khuấy tan)|Chiết xuất cà phê ép.; Làm lạnh cà phê trước khi cho vào ly.; Cho đường vàng vào cà phê và khuấy tan.; Cho đá vào ly.; Rót cà phê đã làm lạnh vào ly và phục vụ.
-Cà phê|Cà phê sữa đá ép|Cafe ép=45 ml; Sữa đặc=20 ml|Chiết xuất cà phê ép.; Làm lạnh cà phê trước khi cho vào ly.; Cho sữa đặc vào ly.; Rót cà phê đã làm lạnh lên sữa.; Khuấy đều hoặc phục vụ theo kiểu chia tầng tùy yêu cầu.
+Cà phê|Cà phê đen ép nóng|Cafe ép=45 ml; Đường vàng=4 gr|Chiết xuất cà phê ép.; Cho đường gói vào đĩa; cho ly cafe đã được chiết xuất lên đĩa
+Cà phê|Cà phê sữa ép nóng|Cafe ép=45 ml; Sữa đặc=20 ml|Cho sữa đặc vào ly.; Chiết xuất cà phê ép nóng.; Rót cà phê lên sữa.; Khuấy đều.
+Cà phê|Cà phê đen đá ép|Cafe ép=45 ml; Đường vàng=4 gr (khuấy tan)|Chiết xuất cà phê ép.; Làm lạnh cà phê.; Cho đường vàng vào cà phê và khuấy tan.; Cho đá vào ly.; Rót cà phê đã làm lạnh vào ly.
+Cà phê|Cà phê sữa đá ép|Cafe ép=45 ml; Sữa đặc=20 ml|Chiết xuất cà phê ép.; Làm lạnh cà phê.; Cho sữa đặc vào ly.; Rót cà phê đã làm lạnh lên sữa.; Khuấy đều hoặc phục vụ theo kiểu chia tầng tùy yêu cầu.
 Cà phê|Bạc xỉu|Cafe phin=30 ml; Sữa tươi=50 ml; Sữa đặc=30 ml|Cho sữa đặc và sữa tươi vào đáy ly.; Khuấy đều phần sữa.; Cho đá vào ly.; Đánh bọt cà phê phin.; Rót cà phê đã đánh bọt lên trên để tạo 2 tầng sữa dưới cà phê trên.
 Cà phê|Latte đá|Cafe ép=30 ml; Sữa tươi=90 ml; Kem béo=20 ml; Đường=10 ml|Cho sữa tươi, kem béo và đường vào shaker, chưa cho cà phê.; Thêm đá và lắc đều cho hỗn hợp lạnh.; Đổ hỗn hợp sữa ra ly.; Rót cà phê ép lên trên cùng để tạo tầng.; Kiểm tra lớp cà phê nổi đẹp rồi phục vụ.
 Cà phê|Capuchino đá|Cafe ép=30 ml; Sữa tươi=70 ml; Kem béo=20 ml; Đường=10 ml|Cho sữa tươi, kem béo và đường vào shaker, chưa cho cà phê.; Thêm đá và lắc đều để tạo độ lạnh và độ bông nhẹ.; Đổ hỗn hợp ra ly.; Rót cà phê ép lên trên cùng.; Giữ lớp cà phê phía trên rõ tầng trước khi phục vụ.
@@ -31,10 +31,10 @@ Cà phê|Phindi hạnh nhân|Syrup hạnh nhân=10 ml; Sữa tươi=50 ml; Rich=
 Cà phê|Cà phê sữa đá phin|Phin pha sẵn=40 ml; Sữa đặc=20 ml|Cho sữa đặc vào ly.; Cho cà phê phin pha sẵn vào ly.; Khuấy đều cho sữa và cà phê hòa quyện.; Cho đá vào ly và phục vụ.
 Cà phê|Cà phê phin đen nóng|Bột cà phê=25 gr; Đường=1 gói; Nước sôi=80 ml (20 ml nước ủ, 60ml nước chế cf)|Cân 25g cà phê vào phin nhôm.; Lắc nhẹ cho cà phê trải đều mặt phin.; Cho 20ml nước sôi vào ủ cà phê 5-10 giây.; Cho tiếp 60ml nước sôi để chiết xuất cà phê.; Cho đường riêng hoặc phục vụ theo yêu cầu khách.
 Cà phê|Cà phê phin sữa nóng|Bột cà phê=25 gr; Sữa đặc=20 ml; Nước sôi=80 ml (20 ml nước ủ, 60ml nước chế cf)|Cho sữa đặc vào đáy ly.; Cân 25g cà phê vào phin nhôm và lắc nhẹ cho cà phê trải đều.; Cho 20ml nước sôi vào ủ 5-10 giây.; Cho tiếp 60ml nước sôi để chiết xuất cà phê.; Khi cà phê chảy xong thì khuấy đều với sữa đặc và phục vụ nóng.
-Cà phê|Cà phê đen đá phin|Phin pha sẵn=40 ml; Đường vàng=4 g|Cho cà phê phin pha sẵn và đường vàng vào ly.; Khuấy tan đường.; Cho đá vào ly.; Khuấy nhẹ trước khi phục vụ.
+Cà phê|Cà phê đen đá phin|Phin pha sẵn=40 ml; Đường vàng=4 g|Cho cà phê phin và đường vào ly.; Khuấy tan đường.; Cho đá vào ly.; Khuấy nhẹ trước khi phục vụ.
 Trà Thanh nhiệt|Trà atiso đỏ hạt chia|Nước cốt=160 ml; Cốt chanh=10 ml; Hạt chia=2 muỗng|Cho tất cả nguyên liệu vào shaker.; Thêm đá và lắc đều.; Đổ ra ly.; Decor chanh và lá húng.
 Trà Thanh nhiệt|Chanh sả gừng hạt chia|Nước cốt=160 ml; Cốt chanh=10 ml; Hạt chia=2 muỗng|Cho tất cả nguyên liệu vào shaker.; Thêm đá và lắc đều.; Đổ ra ly.; Decor chanh và lá húng.
-Trà Thanh nhiệt|Trà hoa đậu biếc hạt chia|Nước cốt=160 ml; Cốt chanh=10 ml; Hạt chia=2 muỗng; Việt quốc=30 ml|Cho tất cả nguyên liệu vào shaker.; Thêm đá và lắc đều.; Đổ ra ly.; Decor chanh và lá húng.
+Trà Thanh nhiệt|Trà hoa đậu biếc hạt chia|Nước cốt=160 ml; Cốt chanh=10 ml; Hạt chia=2 muỗng; Việt quất=30 ml|Cho tất cả nguyên liệu vào shaker.; Thêm đá và lắc đều.; Đổ ra ly.; Decor chanh và lá húng.
 Trà Thanh nhiệt|Trà đào hạt chia|Nước cốt=160 ml; Hạt chia=2 muỗng|Cho tất cả nguyên liệu vào shaker.; Thêm đá và lắc đều.; Đổ ra ly.; Decor chanh và lá húng.
 Trà Thanh nhiệt|Trà đào cam sả|Nước cốt=120 ml; Cốt chanh=10 ml; Nước cam=10 ml; Monin sả=15 ml|Cho tất cả nguyên liệu vào shaker.; Thêm đá và lắc đều.; Đổ ra ly.; Decor chanh, cam hoặc lá húng nếu có.
 Trà Thanh nhiệt|Trà thảo mộc hạt chia|Nước cốt=160 ml; Củ năng=1 củ; Hạt chia=2 muỗng; Thạch sương sáo=2 muỗng|Cho nước cốt thảo mộc vào ly trước.; Cho đá vào khoảng 2/3 ly.; Cho hạt chia vào ly.; Cho thạch sương sáo vào ly.; Cắt nhỏ 1 củ năng rồi cho vào ly.; Cho phần cái của cốt thảo mộc lên trên cùng.
@@ -54,7 +54,7 @@ Trà Thanh nhiệt|Trà sen vàng|Trà olong cầu tre=2 gói; Nước sôi=130 
 Trà Thanh nhiệt|Trà gừng|Trà=1 gói; Nước sôi=180 ml; Mật ong=15 ml; Gừng=4-5 lát băm nhỏ|Ủ trà với nước sôi.; Cho mật ong và gừng băm nhỏ vào ly.; Rót trà nóng vào ly và khuấy đều.; Đợi gừng ra vị rồi phục vụ.; Có thể dùng nóng hoặc làm lạnh tùy yêu cầu.
 Trà Thanh nhiệt|Nước chanh|Cốt chanh=40 ml; Nước đường=40 ml; Nước lọc=80 ml; Muối=1 g|Cho tất cả nguyên liệu vào shaker.; Thêm đá và lắc đều.; Đổ ra ly.; Decor chanh và lá húng.
 Đá xay & sinh tố|Sinh tố bơ|Bơ=200 g; Sữa tươi=50 ml; Sữa đặc=30 ml; Nước đường=20 ml; Đá=150 g|Cho toàn bộ nguyên liệu vào máy xay.; Xay mịn.; Đổ ra ly.; Decor lá húng.
-Đá xay & sinh tố|Sinh tố xoài|Xoài=100 g; Sữa tươi=40 ml; Nước đường=20 ml; Sữa đặc=20 ml; Sirup chanh dây=20 ml; Nước lọc=40 ml; Đá=150 g|Cho toàn bộ nguyên liệu vào máy xay.; Xay mịn.; Đổ ra ly.; Decor ít xoài cắt hạt lựu và lá húng.
+Đá xay & sinh tố|Sinh tố xoài|Xoài=100 g; Sữa tươi=40 ml; Nước đường=20 ml; Sữa đặc=20 ml; Sirup chanh dây=20 ml; Nước lọc=40 ml; Đá=150 g|Cho toàn bộ nguyên liệu vào máy xay.; Xay mịn.; Đổ ra ly.; Decor xoài cắt hạt lựu và lá húng.
 Đá xay & sinh tố|Sinh tố dừa|Cơm dừa=80 g; Sữa đặc=30 ml; Đường nước=20 ml; Sữa tươi=30 ml; Nước dừa=100 ml; Đá=150 g|Cho toàn bộ nguyên liệu vào máy xay.; Xay mịn.; Đổ ra ly.; Decor dừa khô và lá húng.
 Đá xay & sinh tố|Bơ già dừa non|Phần cốt dừa=cốt dừa 60ml, sữa tươi 20ml, sữa đặc 20ml, nước đường 5ml; Phần bơ=bơ 80g, nước lọc 60ml, sữa đặc 30ml, nước đường 5ml|Chuẩn bị phần cốt dừa và cho nằm dưới đáy ly.; Cho đá vào khoảng 1/2 ly.; Xay phần bơ đến khi mịn.; Cho phần bơ lên trên phần cốt dừa.; Decor dừa khô.
 Đá xay & sinh tố|Matcha đá xay|Bột matcha=8 g; Nước đường=10 ml; Sữa đặc=40 ml; Sữa tươi=60 ml; Bột frap=14 g; Richs=20 ml; Đá=150 g|Cho toàn bộ nguyên liệu vào máy xay.; Xay mịn.; Đổ ra ly.; Cho kem tươi lên trên.; Rắc bột matcha hoặc cacao nhẹ lên mặt kem tươi.
