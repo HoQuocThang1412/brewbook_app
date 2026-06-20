@@ -3,7 +3,7 @@ import 'package:hive/hive.dart';
 import '../models/ingredient.dart';
 import '../models/recipe.dart';
 
-const _excelRecipesSeedVersion = 'excel_recipes_seeded_v4';
+const _excelRecipesSeedVersion = 'excel_recipes_seeded_v5';
 
 String get excelRecipesSeedVersion => _excelRecipesSeedVersion;
 
@@ -113,9 +113,7 @@ List<Recipe> _buildImportedRecipes() {
       status: RecipeStatus.dangBan,
       ingredients: _parseIngredients(ingredientsRaw),
       steps: _parseSteps(stepsRaw),
-      note: category == 'Nguyên liệu nền'
-          ? 'Mục nguyên liệu nền dùng để pha các món khác trong quán.'
-          : 'Nhập từ file Cong_thuc_pha_che.docx. Một số định lượng mô tả được giữ nguyên theo file gốc.',
+      note: '',
       createdAt: now,
       updatedAt: now,
     );
