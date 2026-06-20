@@ -3,7 +3,7 @@ import 'package:hive/hive.dart';
 import '../models/ingredient.dart';
 import '../models/recipe.dart';
 
-const _excelRecipesSeedVersion = 'excel_recipes_seeded_v2';
+const _excelRecipesSeedVersion = 'excel_recipes_seeded_v3';
 
 String get excelRecipesSeedVersion => _excelRecipesSeedVersion;
 
@@ -13,48 +13,61 @@ Nguyên liệu nền|Kem muối|Kem béo=200 ml; Sữa tươi không đường=7
 Nguyên liệu nền|Nước đường|Đường cát=1000 g; Nước lọc=700 ml|Đun hoặc khuấy nước nóng với đường đến khi tan hoàn toàn.; Để nguội, lọc nếu cần.; Cho vào chai sạch và bảo quản nơi mát.
 Nguyên liệu nền|Trà lài|Trà lài=20 g; Nước sôi=1000 ml; Đá=500 g|Ủ trà lài với nước sôi theo thời gian chuẩn của quán.; Lọc bỏ xác trà.; Làm lạnh nhanh bằng đá để giữ hương trà.
 Nguyên liệu nền|Trà oolong|Trà oolong=20 g; Nước sôi=1000 ml; Đá=500 g|Ủ trà oolong với nước sôi theo thời gian chuẩn của quán.; Lọc bỏ xác trà.; Làm lạnh nhanh và bảo quản trong ca sạch.
-Cà phê|Cà phê đen nóng|Bột cà phê=25 gr; Đường=1 gói; Nước sôi=80 ml; Bột cà phê=25 gr; Sữa đặc=20 ml; Nước sôi=80 ml
-Cà phê|Cà phê đen đá|Phin pha sẵn=40 ml; Đường=1-2 gói (ước lượng)
-Cà phê|Cà phê đen sữa nóng|Phin pha sẵn=40 ml; Sữa đặc=20 ml
+Cà phê|Cà phê phin đen nóng|Bột cà phê=25 gr; Đường=1 gói; Nước sôi=80 ml (20 ml nước ủ, 60ml nước chế cf)
+Cà phê|Cà phê phin sữa nóng|Bột cà phê=25 gr; Sữa đặc=20 ml; Nước sôi=80 ml (20 ml nước ủ, 60ml nước chế cf)
+Cà phê|Cà phê đen đá phin|Phin pha sẵn=40 ml; Đường vàng=4g
+Cà phê|Cà phê sữa đá phin|Phin pha sẵn=40 ml; Sữa đặc=20 ml
 Cà phê|Cà phê muối|Phin pha sẵn=35 ml; Sữa tươi=20 ml; Sữa đặc=20 ml; Kem muối=2-4 muỗng
-Cà phê|Cà phê đen ép nóng|Bột café xay=2 cup; Nước=2 cup; Đường=1 túi
-Cà phê|Cà phê đen ép sữa nóng|Bột café xay=2 cup; Nước=2 cup; Sữa đặc=20 ml
-Cà phê|Cà phê đen ép đá|Bột café xay=2 cup; Nước=2 cup; Đường=15 gr (ước lượng)
-Cà phê|Cà phê đen sữa đá|Bột café xay=2 cup; Nước=2 cup; Sữa đặc=20 ml
-Cà phê|Bạc xỉu|Bột café xay=1 cup; Nước=1 cup; Sữa tươi=50 ml; Sữa đặc=30 ml
-Cà phê|Ice Latte|Bột café xay=1 cup; Nước=1 cup; Sữa tươi=90 ml; Kem béo=20 ml; Đường=10 ml
-Cà phê|Capuchino|Bột café xay=1 cup; Nước=1 cup; Sữa tươi=70 ml; Kem béo=20 ml; Đường=10 ml
-Cà phê|Cà phê yến mạch|Sữa yến mạch=100 ml; Sữa đặc=30 ml; Kem béo=30 ml; Café ép=1 cup; Thạch sương sáo=2 muỗng
+Cà phê|Cà phê đen ép nóng|Cafe ép=45 ml; Đường vàng=4 gr
+Cà phê|Cà phê sữa ép nóng|Cafe ép=45 ml; Sữa đặc=20ml
+Cà phê|Cà phê đen đá ép|Cafe ép=45 ml; Đường vàng=4 gr (khuấy tan)
+Cà phê|Cà phê sữa đá ép|Cafe ép=45 ml; Sữa đặc=20ml
+Cà phê|Bạc xỉu|Cafe phin=30 ml; Sữa tươi=50 ml; Sữa đặc=30 ml
+Cà phê|Latte đá|Cafe ép=30 ml; Sữa tươi=90 ml; Kem béo=20 ml; Đường=10 ml
+Cà phê|Capuchino đá|Cafe ép=30 ml; Sữa tươi=70 ml; Kem béo=20 ml; Đường=10 ml
+Cà phê|Latte nóng|Cafe ép=30 ml; Sữa tươi=150 ml; Kem béo=20 ml; Đường riêng=10 ml
+Cà phê|Capuchino nóng|Cafe ép=30 ml; Sữa tươi=1500 ml; Kem béo=20 ml; Đường riêng=10 ml
+Cà phê|Cà phê yến mạch|Sữa yến mạch=100 ml; Sữa đặc=30 ml; Kem béo=10 ml; Cafe ép=30 ml; Thạch sương sáo=2 muỗng
 Cà phê|Cacao đá|Sữa tươi=50ml; Sữa đặc=30ml; Cacao=Nữa muỗng
-Cà phê|Cacao nóng|Sữa tươi=120ml; Sữa đặc=30ml; Nước sôi=30ml; Cacao=Nữa muỗng
-Cà phê|Matcha latte yến mạch|Sữa yến mạch=120ml; Sữa đặc=30ml; Sữa yên mạch đánh matcha=40ml; Đường=10ml; Matcha=4g
+Cà phê|Cacao nóng|Sữa tươi=150ml; Sữa đặc=30ml; Nước sôi=30ml; Cacao=Nữa muỗng
+Cà phê|Matcha latte yến mạch|Sữa yến mạch=120ml; Sữa đặc=30ml; Sữa yến mạch đánh matcha=40ml; Matcha=4g
+Cà phê|Phindi hạnh nhân|Syrup hạnh nhân=10ml; Sữa tươi=50ml; Rich=10 ml; Đường nước=10ml; Cafe phin=15ml; Thạch cafe=2 muỗng
 Trà Thanh nhiệt|Chanh sả gừng hạt chia|Nước cốt=160 ml; Cốt chanh=10 ml; Hạt chia=2 muỗng
 Trà Thanh nhiệt|Trà atiso đỏ hạt chia|Nước cốt=160 ml; Cốt chanh=10 ml; Hạt chia=2 muỗng
 Trà Thanh nhiệt|Trà hoa đậu biếc hạt chia|Nước cốt=160 ml; Cốt chanh=10 ml; Hạt chia=2 muỗng; Việt quốc=30 ml
 Trà Thanh nhiệt|Trà đào hạt chia|Nước cốt=160 ml; Hạt chia=2 muỗng
 Trà Thanh nhiệt|Trà đào cam sả|Nước cốt=120 ml; Cốt chanh=10 ml; Nước cam=10 ml; Monin sả=15 ml
 Trà Thanh nhiệt|Trà thảo mộc hạt chia|Nước cốt=160 ml; Củ nắng=2 củ; Hạt chia=2 muỗng; Thạch sương sáo=2 muỗng
-Trà Thanh nhiệt|Sữa tươi hoa đậu biếc|Nước cốt=60 ml; Sữa tươi=50 ml; Đường=10 ml; Hạt chia=2 muỗng; Củ năng=2 củ
-Trà Thanh nhiệt|Trà sữa oolong|Nước cốt=160 ml; Thạch cà phê=2 muỗng; Trân châu trắng=2 muỗng; Cốt chanh=10 ml
-Trà Thanh nhiệt|Chanh muối mật ong|Mứt chanh muối=40 ml; Nước lọc=80 ml; Mật ong=15 ml
+Trà Thanh nhiệt|Sữa tươi hoa đậu biếc|Nước cốt=60 ml; Sữa tươi=50 ml; Đường=10 ml; Rich=20 ml; Hạt chia=2 muỗng; Củ năng=2 củ; Thạch sương sáo=1 muỗng
+Trà Thanh nhiệt|Trà sữa oolong|Nước cốt=160 ml; Thạch cà phê=2 muỗng; Trân châu trắng=2 muỗng
+Trà Thanh nhiệt|Chanh muối mật ong|Mứt chanh muối=40 ml; Nước lọc=80 ml; Chanh=10 ml; Mật ong=15 ml
 Trà Thanh nhiệt|Matcha mãng cầu|Hỗn hợp matcha=40 ml; Mứt mãng cầu=40 ml; Đường=30 ml; Nước lọc=50 ml; Muối=0.1 g
-Trà Thanh nhiệt|Trà vải hoa hồng|Trà lài=100 ml; Syrup vải=20 ml; Nước đường=20 ml; Cốt chanh=10 ml
-Trà Thanh nhiệt|Trà dưa lưới|Trà lài=100 ml; Mứt dưa lưới=30 ml; Syrup dưa lưới=30 ml; Nước đường=10 ml; Cốt chanh=10 ml
-Trà Thanh nhiệt|Trà táo xanh|Trà lài=100 ml; Syrup táo=20 ml; Nước đường=20 ml; Mứt táo=20 ml; Nước lọc=40 ml
-Trà Thanh nhiệt|Trà dâu tằm|Trà ôlong=100ml; Mứt dâu tằm=30ml; Sinh tố dâu tằm=20ml; Đường nước=15ml; Tắc=5ml
-Trà Thanh nhiệt|Trà lài đác thơm|Trà lài=100ml; Chanh=20ml; Nước đường=40ml; Đác Thơm=2 muỗng
-Trà Thanh nhiệt|Trà sen vàng|Trà olong cầu tre=2 gói; Nước sôi=130ml; Nước đường=40ml; Hạt sen=10 hạt; kem muối=2 muỗng
-Trà Thanh nhiệt|Nước chanh|Cốt chanh=40ml; Nước đường=40ml; Nước lọc=80ml; muối=11g
-Trà Thanh nhiệt|Trà gừng|Trà=1gói; Nước sôi=180ml; Mật ong=15ml; Gừng=4-5 lát băm nhỏ
-Đá xay & sinh tố|Sinh tố bơ|bơ=200g; sữa tươi=30ml; sữa đặc=60ml; nước đường=10ml; đá=150g
-Đá xay & sinh tố|Sinh tố xoài|xoài=150g; mật ong=30ml; sirup chanh dây=20ml; nước lọc=20ml; đá=180g
-Đá xay & sinh tố|Sinh tố dừa|cơm dừa=80g; sữa đặc=30ml; đường nước=20ml; sữa tươi=30ml; nước lọc=60ml; đá=150g
-Đá xay & sinh tố|Bơ già dừa non|Phần cốt dừa=phần bơ; cốt dừa : 60ml=bơ : 80g; sữa tươi : 20ml=sữa tươi : 60ml; sữa đặc : 20ml=sữa đặc : 30ml; nước đường : 5ml=nước đường: 5ml; Nguyên liệu=đá : 70g
-Đá xay & sinh tố|Matcha đá xay|bột matcha=8g; nước đường=10ml; sữa đặc=40ml; sữa tươi=60ml; bột frap=14g; rrichs=10ml; đá=1 ly
-Đá xay & sinh tố|Cacao đá xay|cacao=8g; nước đường=10ml; sữa đặc=40ml; sữa tươi=60ml; bột frap=14g; rrichs=10ml; đá=1 ly
-Đá xay & sinh tố|mãng cầu tuyết|sữa chua=nữa hủ; sữa đặc=30ml; sữa tươi=50ml; bột frap=1 muỗng; tắc=2 trái; mứt=50ml
-Đá xay & sinh tố|sữa chua hạt đác|sữa chua=1 hủ; sữa tươi=20ml; sữa đặc=30ml; tắc=2 trái; đác thơm=2 muỗng
-Đá xay & sinh tố|sữa chua dâu tằm|sữa chua=1 hủ; sữa tươi=20ml; sữa đặc=30ml; tắc=2 trái; mứt dâu tằm=40ml
+Trà Thanh nhiệt|Trà vải hoa hồng|Trà lài=100 ml; Syrup vải=40 ml; Nước đường=20 ml; Cốt chanh=10 ml
+Trà Thanh nhiệt|Trà dưa lưới|Trà lài=100 ml; Mứt dưa lưới=30 ml; Syrup dưa lưới=10 ml; Nước đường=10 ml; Cốt chanh=10 ml
+Trà Thanh nhiệt|Trà táo xanh|Trà lài=30 ml; Syrup táo=20 ml; Nước đường=10 ml; Mứt táo=20 ml; Nước lọc=40 ml
+Trà Thanh nhiệt|Trà dâu tằm|Trà lài=100ml; Mứt dâu tằm=30ml; Sinh tố dâu tằm=20ml; Đường nước=15ml; Tắc=5ml
+Trà Thanh nhiệt|Trà lài đác thơm|Trà lài=100ml; Chanh=10ml; Nước đường=30ml; Đác Thơm=2 muỗng
+Trà Thanh nhiệt|Trà mãng cầu hạt đác|Trà lài=100ml; Chanh=10ml; Nước đường=30ml; Mứt mãng cầu=30ml; Hạt đác=10 cục
+Trà Thanh nhiệt|Trà mận|Trà lài=120ml; Chanh=10ml; Nước đường=15ml; Mứt mận=50ml
+Trà Thanh nhiệt|Trà thạch đào|Trà cozy đào=1 gói => 130ml; Nước đường=40ml; Rich=40ml; Đào miếng=2 lát; Thạch đào=3-4 lát
+Trà Thanh nhiệt|Trà sen vàng|Trà olong cầu tre=2 gói; Nước sôi=130ml; Nước đường=40ml; Hạt sen=10 hạt; Kem muối=2 muỗng
+Trà Thanh nhiệt|Nước chanh|Cốt chanh=40ml; Nước đường=40ml; Nước lọc=80ml; Muối=1g
+Trà Thanh nhiệt|Trà gừng|Trà=1 gói; Nước sôi=180ml; Mật ong=15ml; Gừng=4-5 lát băm nhỏ
+Đá xay & sinh tố|Sinh tố bơ|Bơ=200g; Sữa tươi=50ml; Sữa đặc=30ml; Nước đường=20ml; Đá=150g
+Đá xay & sinh tố|Sinh tố xoài|Xoài=100g; Sữa tươi=40 ml; Nước đường=20 ml; Sữa đặc=20 ml; Sirup chanh dây=20ml; Nước lọc=40ml; Đá=150g
+Đá xay & sinh tố|Sinh tố dừa|Cơm dừa=80g; Sữa đặc=30ml; Đường nước=20ml; Sữa tươi=30ml; Nước dừa=100ml; Đá=150g
+Đá xay & sinh tố|Bơ già dừa non|Phần cốt dừa=cốt dừa 60ml, sữa tươi 20ml, sữa đặc 20ml, nước đường 5ml; Phần bơ=bơ 80g, nước lọc 60ml, sữa đặc 30ml, nước đường 5ml
+Đá xay & sinh tố|Matcha đá xay|Bột matcha=8g; Nước đường=10ml; Sữa đặc=40ml; Sữa tươi=60ml; Bột frap=14g; Richs=20ml; Đá=150g
+Đá xay & sinh tố|Cacao đá xay|Cacao=8g; Nước đường=10ml; Sữa đặc=40ml; Sữa tươi=60ml; Bột frap=14g; Richs=10ml; Đá=150g
+Đá xay & sinh tố|Mãng cầu tuyết|Sữa chua=nữa hủ; Sữa đặc=30ml; Sữa tươi=50ml; Bột frap=1 muỗng; Tắc=2 trái; Mứt mãng cầu=50ml
+Đá xay & sinh tố|Việt quốc đá xay|Sữa chua=nữa hủ; Sữa đặc=30ml; Sữa tươi=50ml; Bột frap=1 muỗng; Tắc=2 trái; Mứt việt quốc=50ml
+Đá xay & sinh tố|Dâu tằm đá xay|Sữa chua=nữa hủ; Sữa đặc=30ml; Sữa tươi=50ml; Bột frap=1 muỗng; Tắc=2 trái; Mứt dâu tằm=50ml
+Đá xay & sinh tố|Dâu tây đá xay|Sữa chua=nữa hủ; Sữa đặc=30ml; Sữa tươi=50ml; Bột frap=1 muỗng; Tắc=2 trái; Mứt dâu tây=50ml
+Đá xay & sinh tố|Sữa chua hạt đác|Sữa chua=1 hủ; Sữa tươi=20ml; Sữa đặc=30ml; Tắc=2 trái; Đác thơm=2 muỗng
+Đá xay & sinh tố|Sữa chua dâu tằm|Sữa chua=1 hủ; Sữa tươi=20ml; Sữa đặc=30ml; Tắc=2 trái; Mứt dâu tằm=40ml
+Đá xay & sinh tố|Sữa chua việt quốc|Sữa chua=1 hủ; Sữa tươi=20ml; Sữa đặc=30ml; Tắc=2 trái; Mứt việt quốc=40ml
+Đá xay & sinh tố|Sữa chua dâu tây|Sữa chua=1 hủ; Sữa tươi=20ml; Sữa đặc=30ml; Tắc=2 trái; Mứt dâu tây=40ml
+Đá xay & sinh tố|Sữa chua mãng cầu|Sữa chua=1 hủ; Sữa tươi=20ml; Sữa đặc=30ml; Tắc=2 trái; Mứt mãng cầu=40ml
 ''';
 
 Future<int> replaceImportedRecipes(Box<Recipe> box) async {
@@ -102,7 +115,7 @@ List<Recipe> _buildImportedRecipes() {
       steps: _parseSteps(stepsRaw),
       note: category == 'Nguyên liệu nền'
           ? 'Mục nguyên liệu nền dùng để pha các món khác trong quán.'
-          : 'Nhập từ file Excel Công thức.xlsx. Một số định lượng mô tả được giữ nguyên theo file gốc.',
+          : 'Nhập từ file Cong_thuc_pha_che.docx. Một số định lượng mô tả được giữ nguyên theo file gốc.',
       createdAt: now,
       updatedAt: now,
     );
