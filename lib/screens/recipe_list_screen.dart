@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../models/recipe.dart';
 import '../services/hive_service.dart';
+import '../services/recipe_excel_export_service.dart';
 import '../theme/app_colors.dart';
 import '../widgets/confirm_delete_dialog.dart';
 import '../widgets/recipe_card.dart';
@@ -35,6 +36,7 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
   String? _selectedStatus;
   bool _showCategorySummary = false;
   bool _showBaseIngredients = false;
+  bool _isExporting = false;
 
   @override
   void initState() {
@@ -96,6 +98,26 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
     );
   }
 
+  Future<void> _onExportExcel() async {
+    if (_isExporting) return;
+
+    setState(() => _isExporting = true);
+    try {
+      await exportRecipesToExcel();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Đã xuất Excel thành công')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Chưa xuất được Excel: $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _isExporting = false);
+    }
+  }
+
   Map<String, int> _getCategoryCounts(List<Recipe> recipes) {
     final result = <String, int>{};
 
@@ -143,7 +165,22 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(
+        title: Text(title),
+        actions: [
+          IconButton(
+            tooltip: 'Xuất Excel',
+            onPressed: _isExporting ? null : _onExportExcel,
+            icon: _isExporting
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.file_download_outlined),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _onAdd,
         icon: const Icon(Icons.add_rounded),
