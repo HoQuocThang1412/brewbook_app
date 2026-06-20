@@ -3,11 +3,16 @@ import 'package:hive/hive.dart';
 import '../models/ingredient.dart';
 import '../models/recipe.dart';
 
-const _excelRecipesSeedVersion = 'excel_recipes_seeded_v1';
+const _excelRecipesSeedVersion = 'excel_recipes_seeded_v2';
 
 String get excelRecipesSeedVersion => _excelRecipesSeedVersion;
 
 const String _rawImportedRecipes = r'''
+Nguyên liệu nền|Kem tươi|Kem béo=200 ml; Sữa tươi không đường=80 ml; Sữa đặc=40 ml|Cho kem béo, sữa tươi và sữa đặc vào ca sạch.; Đánh hoặc khuấy lạnh đến khi hỗn hợp mịn, hơi sánh.; Bảo quản lạnh và dùng trong ngày.
+Nguyên liệu nền|Kem muối|Kem béo=200 ml; Sữa tươi không đường=70 ml; Sữa đặc=40 ml; Muối=1-2 g|Cho toàn bộ nguyên liệu vào ca lạnh.; Đánh đến khi kem sánh mịn, có vị mặn nhẹ.; Bảo quản lạnh, khuấy lại trước khi dùng.
+Nguyên liệu nền|Nước đường|Đường cát=1000 g; Nước lọc=700 ml|Đun hoặc khuấy nước nóng với đường đến khi tan hoàn toàn.; Để nguội, lọc nếu cần.; Cho vào chai sạch và bảo quản nơi mát.
+Nguyên liệu nền|Trà lài|Trà lài=20 g; Nước sôi=1000 ml; Đá=500 g|Ủ trà lài với nước sôi theo thời gian chuẩn của quán.; Lọc bỏ xác trà.; Làm lạnh nhanh bằng đá để giữ hương trà.
+Nguyên liệu nền|Trà oolong|Trà oolong=20 g; Nước sôi=1000 ml; Đá=500 g|Ủ trà oolong với nước sôi theo thời gian chuẩn của quán.; Lọc bỏ xác trà.; Làm lạnh nhanh và bảo quản trong ca sạch.
 Cà phê|Cà phê đen nóng|Bột cà phê=25 gr; Đường=1 gói; Nước sôi=80 ml; Bột cà phê=25 gr; Sữa đặc=20 ml; Nước sôi=80 ml
 Cà phê|Cà phê đen đá|Phin pha sẵn=40 ml; Đường=1-2 gói (ước lượng)
 Cà phê|Cà phê đen sữa nóng|Phin pha sẵn=40 ml; Sữa đặc=20 ml
@@ -52,7 +57,27 @@ Trà Thanh nhiệt|Trà gừng|Trà=1gói; Nước sôi=180ml; Mật ong=15ml; G
 Đá xay & sinh tố|sữa chua dâu tằm|sữa chua=1 hủ; sữa tươi=20ml; sữa đặc=30ml; tắc=2 trái; mứt dâu tằm=40ml
 ''';
 
+Future<int> replaceImportedRecipes(Box<Recipe> box) async {
+  await box.clear();
+  await seedImportedRecipes(box);
+  return _importedRecipeCount;
+}
+
 Future<void> seedImportedRecipes(Box<Recipe> box) async {
+  final recipes = _buildImportedRecipes();
+
+  for (final recipe in recipes) {
+    await box.put(recipe.id, recipe);
+  }
+}
+
+int get _importedRecipeCount => _rawImportedRecipes
+    .split('\n')
+    .map((line) => line.trim())
+    .where((line) => line.isNotEmpty)
+    .length;
+
+List<Recipe> _buildImportedRecipes() {
   final now = DateTime.now();
   final lines = _rawImportedRecipes
       .split('\n')
@@ -60,33 +85,44 @@ Future<void> seedImportedRecipes(Box<Recipe> box) async {
       .where((line) => line.isNotEmpty)
       .toList();
 
-  for (var i = 0; i < lines.length; i++) {
+  return List.generate(lines.length, (i) {
     final parts = lines[i].split('|');
-    if (parts.length < 3) continue;
+    final category = parts.isNotEmpty ? parts[0].trim() : 'Khác';
+    final name = parts.length > 1 ? parts[1].trim() : 'Công thức ${i + 1}';
+    final ingredientsRaw = parts.length > 2 ? parts[2].trim() : '';
+    final stepsRaw = parts.length > 3 ? parts.sublist(3).join('|') : '';
 
-    final category = parts[0].trim();
-    final name = parts[1].trim();
-    final ingredientsRaw = parts.sublist(2).join('|');
-
-    final recipe = Recipe(
+    return Recipe(
       id: 'excel-recipe-${i + 1}',
       name: name,
       category: category,
-      cup: 'Ly tiêu chuẩn',
+      cup: category == 'Nguyên liệu nền' ? 'Công thức nền' : 'Ly tiêu chuẩn',
       status: RecipeStatus.dangBan,
       ingredients: _parseIngredients(ingredientsRaw),
-      steps: const [
-        'Chuẩn bị đầy đủ nguyên liệu theo đúng định lượng.',
-        'Thực hiện pha chế theo quy trình vận hành của quán.',
-        'Kiểm tra hương vị, hoàn thiện ly và phục vụ khách.',
-      ],
-      note: 'Nhập từ file Excel Công thức.xlsx. Một số định lượng mô tả được giữ nguyên theo file gốc.',
+      steps: _parseSteps(stepsRaw),
+      note: category == 'Nguyên liệu nền'
+          ? 'Mục nguyên liệu nền dùng để pha các món khác trong quán.'
+          : 'Nhập từ file Excel Công thức.xlsx. Một số định lượng mô tả được giữ nguyên theo file gốc.',
       createdAt: now,
       updatedAt: now,
     );
+  });
+}
 
-    await box.put(recipe.id, recipe);
-  }
+List<String> _parseSteps(String raw) {
+  final steps = raw
+      .split(';')
+      .map((step) => step.trim())
+      .where((step) => step.isNotEmpty)
+      .toList();
+
+  if (steps.isNotEmpty) return steps;
+
+  return const [
+    'Chuẩn bị đầy đủ nguyên liệu theo đúng định lượng.',
+    'Thực hiện pha chế theo quy trình vận hành của quán.',
+    'Kiểm tra hương vị, hoàn thiện ly và phục vụ khách.',
+  ];
 }
 
 List<Ingredient> _parseIngredients(String raw) {
