@@ -95,14 +95,16 @@ String _worksheetXml(_RecipeGroup group) {
       row++;
     }
 
-    rows.add(_ExcelRow(row, [_cell('A$row', 'Cách pha', 3)], height: 22));
-    merges.add('A$row:C$row');
-    row++;
-
-    for (var i = 0; i < recipe.steps.length; i++) {
-      rows.add(_ExcelRow(row, [_cell('A$row', '${i + 1}. ${recipe.steps[i]}', 5)], height: 30));
+    if (recipe.steps.isNotEmpty) {
+      rows.add(_ExcelRow(row, [_cell('A$row', 'Cách pha', 3)], height: 22));
       merges.add('A$row:C$row');
       row++;
+
+      for (var i = 0; i < recipe.steps.length; i++) {
+        rows.add(_ExcelRow(row, [_cell('A$row', '${i + 1}. ${recipe.steps[i]}', 5)], height: 30));
+        merges.add('A$row:C$row');
+        row++;
+      }
     }
 
     row++;
