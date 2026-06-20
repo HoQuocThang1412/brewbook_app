@@ -5,6 +5,7 @@ import 'services/hive_service.dart';
 import 'services/imported_recipes.dart';
 import 'theme/app_theme.dart';
 import 'screens/main_navigation_screen.dart';
+import 'screens/welcome_screen.dart';
 
 bool _showRecipeUpdateMessage = false;
 int _updatedRecipeCount = 0;
@@ -36,10 +37,12 @@ class BrewBookApp extends StatelessWidget {
       title: 'BrewBook',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: _StartupMessageWrapper(
-        showRecipeUpdateMessage: _showRecipeUpdateMessage,
-        updatedRecipeCount: _updatedRecipeCount,
-        child: const MainNavigationScreen(),
+      home: WelcomeScreen(
+        nextScreen: _StartupMessageWrapper(
+          showRecipeUpdateMessage: _showRecipeUpdateMessage,
+          updatedRecipeCount: _updatedRecipeCount,
+          child: const MainNavigationScreen(),
+        ),
       ),
     );
   }
