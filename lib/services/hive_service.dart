@@ -6,7 +6,7 @@ import '../models/ingredient.dart';
 import '../models/report_checklist.dart';
 import '../models/work_process.dart';
 
-import 'sample_data.dart';
+import 'imported_recipes.dart';
 import 'report_checklist_templates.dart';
 import 'work_process_templates.dart';
 
@@ -14,6 +14,8 @@ class HiveService {
   static const String recipeBoxName = 'recipes_box';
   static const String reportChecklistBoxName = 'report_checklists_box';
   static const String workProcessBoxName = 'work_process_box';
+  static const String settingsBoxName = 'settings_box';
+  static const String recipesSeedVersionKey = 'recipes_seed_version';
 
   static Box<Recipe>? _recipeBox;
   static Box<ReportChecklistSession>? _reportChecklistBox;
@@ -25,19 +27,15 @@ class HiveService {
     if (!Hive.isAdapterRegistered(0)) {
       Hive.registerAdapter(RecipeAdapter());
     }
-
     if (!Hive.isAdapterRegistered(1)) {
       Hive.registerAdapter(IngredientAdapter());
     }
-
     if (!Hive.isAdapterRegistered(2)) {
       Hive.registerAdapter(ReportChecklistItemAdapter());
     }
-
     if (!Hive.isAdapterRegistered(3)) {
       Hive.registerAdapter(ReportChecklistSessionAdapter());
     }
-
     if (!Hive.isAdapterRegistered(4)) {
       Hive.registerAdapter(WorkProcessItemAdapter());
     }
@@ -46,8 +44,12 @@ class HiveService {
     _reportChecklistBox = await Hive.openBox<ReportChecklistSession>(reportChecklistBoxName);
     _workProcessBox = await Hive.openBox<WorkProcessItem>(workProcessBoxName);
 
-    if (_recipeBox!.isEmpty) {
-      await seedSampleData(_recipeBox!);
+    final settingsBox = await Hive.openBox(settingsBoxName);
+    final currentRecipeVersion = settingsBox.get(recipesSeedVersionKey);
+
+    if (_recipeBox!.isEmpty || currentRecipeVersion != excelRecipesSeedVersion) {
+      await replaceImportedRecipes(_recipeBox!);
+      await settingsBox.put(recipesSeedVersionKey, excelRecipesSeedVersion);
     }
 
     if (_workProcessBox!.isEmpty) {
@@ -100,22 +102,15 @@ class HiveService {
         .where((category) => category.isNotEmpty)
         .toSet()
         .toList();
-
     categories.sort();
     return categories;
   }
 
-  static int get totalRecipes {
-    return box.values.length;
-  }
+  static int get totalRecipes => box.values.length;
 
-  static int get totalDangBan {
-    return box.values.where((recipe) => recipe.dangBan).length;
-  }
+  static int get totalDangBan => box.values.where((recipe) => recipe.dangBan).length;
 
-  static int get totalCategories {
-    return getAllCategories().length;
-  }
+  static int get totalCategories => getAllCategories().length;
 
   static List<Recipe> get recentRecipes {
     final list = getAllRecipes();
@@ -140,13 +135,11 @@ class HiveService {
 
   static List<ReportChecklistSession> getAllReportSessions() {
     final list = reportBox.values.toList();
-
     list.sort((a, b) {
       final dateCompare = b.workingDate.compareTo(a.workingDate);
       if (dateCompare != 0) return dateCompare;
       return b.createdAt.compareTo(a.createdAt);
     });
-
     return list;
   }
 
@@ -163,7 +156,6 @@ class HiveService {
         return session;
       }
     }
-
     return null;
   }
 
@@ -172,26 +164,17 @@ class HiveService {
     required DateTime workingDate,
     String employeeName = '',
   }) async {
-    final existed = getSessionByShiftAndDate(
-      shift: shift,
-      date: workingDate,
-    );
-
+    final existed = getSessionByShiftAndDate(shift: shift, date: workingDate);
     if (existed != null) return existed;
 
     final now = DateTime.now();
-
     final id =
         'report-${shift.replaceAll(' ', '-')}-${workingDate.year}${workingDate.month}${workingDate.day}-${now.microsecondsSinceEpoch}';
 
     final session = ReportChecklistSession(
       id: id,
       shift: shift,
-      workingDate: DateTime(
-        workingDate.year,
-        workingDate.month,
-        workingDate.day,
-      ),
+      workingDate: DateTime(workingDate.year, workingDate.month, workingDate.day),
       employeeName: employeeName.trim(),
       items: buildReportItemsForShift(shift),
       createdAt: now,
@@ -211,10 +194,8 @@ class HiveService {
   }) async {
     final session = reportBox.get(sessionId);
     if (session == null) return;
-
     session.employeeName = employeeName.trim();
     session.updatedAt = DateTime.now();
-
     await session.save();
   }
 
@@ -225,20 +206,15 @@ class HiveService {
   }) async {
     final session = reportBox.get(sessionId);
     if (session == null) return;
-
     final index = session.items.indexWhere((item) => item.id == itemId);
     if (index == -1) return;
-
     final oldItem = session.items[index];
-
     session.items[index] = oldItem.copyWith(
       isDone: isDone,
       completedAt: isDone ? DateTime.now() : null,
       clearCompletedAt: !isDone,
     );
-
     session.updatedAt = DateTime.now();
-
     await session.save();
   }
 
@@ -249,25 +225,17 @@ class HiveService {
   }) async {
     final session = reportBox.get(sessionId);
     if (session == null) return;
-
     final index = session.items.indexWhere((item) => item.id == itemId);
     if (index == -1) return;
-
     final oldItem = session.items[index];
-
-    session.items[index] = oldItem.copyWith(
-      note: note.trim(),
-    );
-
+    session.items[index] = oldItem.copyWith(note: note.trim());
     session.updatedAt = DateTime.now();
-
     await session.save();
   }
 
   static Future<void> resetReportSession(String sessionId) async {
     final session = reportBox.get(sessionId);
     if (session == null) return;
-
     session.items = session.items.map((item) {
       return item.copyWith(
         isDone: false,
@@ -276,9 +244,7 @@ class HiveService {
         clearCompletedAt: true,
       );
     }).toList();
-
     session.updatedAt = DateTime.now();
-
     await session.save();
   }
 
@@ -300,7 +266,6 @@ class HiveService {
 
   static Future<void> seedDefaultWorkProcessData() async {
     final items = buildDefaultWorkProcessItems();
-
     for (final item in items) {
       await workProcessBox.put(item.id, item);
     }
@@ -313,35 +278,25 @@ class HiveService {
   }
 
   static List<WorkProcessItem> getWorkProcessItemsByShift(String shift) {
-    final list = workProcessBox.values.where((item) {
-      return item.shift == shift;
-    }).toList();
-
+    final list = workProcessBox.values.where((item) => item.shift == shift).toList();
     list.sort(_compareWorkProcessItem);
     return list;
   }
 
   static int getWorkProcessCountByShift(String shift) {
-    return workProcessBox.values.where((item) {
-      return item.shift == shift;
-    }).length;
+    return workProcessBox.values.where((item) => item.shift == shift).length;
   }
 
   static int getGuidedCountByShift(String shift) {
-    return workProcessBox.values.where((item) {
-      return item.shift == shift && item.isGuided;
-    }).length;
+    return workProcessBox.values
+        .where((item) => item.shift == shift && item.isGuided)
+        .length;
   }
 
   static int getNextWorkProcessOrder(String shift) {
     final list = getWorkProcessItemsByShift(shift);
-
     if (list.isEmpty) return 1;
-
-    final maxOrder = list
-        .map((item) => item.order)
-        .reduce((a, b) => a > b ? a : b);
-
+    final maxOrder = list.map((item) => item.order).reduce((a, b) => a > b ? a : b);
     return maxOrder + 1;
   }
 
@@ -364,23 +319,16 @@ class HiveService {
   }) async {
     final item = workProcessBox.get(id);
     if (item == null) return;
-
     item.isGuided = isGuided;
     item.updatedAt = DateTime.now();
-
     await item.save();
   }
 
-  static int _compareWorkProcessItem(
-    WorkProcessItem a,
-    WorkProcessItem b,
-  ) {
+  static int _compareWorkProcessItem(WorkProcessItem a, WorkProcessItem b) {
     final phaseCompare = _phaseRank(a.phase).compareTo(_phaseRank(b.phase));
     if (phaseCompare != 0) return phaseCompare;
-
     final areaCompare = a.area.compareTo(b.area);
     if (areaCompare != 0) return areaCompare;
-
     return a.order.compareTo(b.order);
   }
 
@@ -400,8 +348,6 @@ class HiveService {
   }
 
   static bool _sameDate(DateTime a, DateTime b) {
-    return a.year == b.year &&
-        a.month == b.month &&
-        a.day == b.day;
+    return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 }
