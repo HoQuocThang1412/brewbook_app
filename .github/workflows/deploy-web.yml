@@ -1,0 +1,56 @@
+name: Build Flutter Web
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'lib/**'
+      - 'web/**'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+      - '.github/workflows/deploy-web.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build-web:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build web
+        run: flutter build web --release --base-href /brewbook_app/
+
+      - name: Replace docs with build output
+        run: |
+          rm -rf docs
+          mkdir -p docs
+          cp -R build/web/. docs/
+
+      - name: Commit built web
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add docs
+          if git diff --cached --quiet; then
+            echo "No changes"
+          else
+            git commit -m "build web from GitHub Actions"
+            git push
+          fi
