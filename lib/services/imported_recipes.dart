@@ -3,7 +3,7 @@ import 'package:hive/hive.dart';
 import '../models/ingredient.dart';
 import '../models/recipe.dart';
 
-const _excelRecipesSeedVersion = 'excel_recipes_seeded_v9';
+const _excelRecipesSeedVersion = 'excel_recipes_seeded_v10';
 
 String get excelRecipesSeedVersion => _excelRecipesSeedVersion;
 
@@ -42,22 +42,22 @@ Trà Thanh nhiệt|SỮA TƯƠI HOA ĐẬU BIẾC|Nước cốt=60 ml; Sữa tư
 Trà Thanh nhiệt|TRÀ SỮA OOLONG|Nước cốt=160 ml; Thạch cà phê=2 muỗng; Trân châu trắng=2 muỗng|Cho nước cốt trà sữa oolong vào.; Cho đá 2/3 ly.; Cho topping vào ly.
 Trà Thanh nhiệt|CHANH MUỐI MẬT ONG|Mứt chanh muối=40 ml; Nước lọc=80 ml; Chanh=10 ml; Mật ong=15 ml|Cho tất cả nguyên liệu vào shaker.; Thêm đá và lắc đều.; Đổ ra ly.; Decor chanh và lá húng.
 Trà Thanh nhiệt|MATCHA MÃNG CẦU|Hỗn hợp matcha=40 ml; Mứt mãng cầu=40 ml; Đường=30 ml; Nước lọc=50 ml; Muối=0.1 g|Cho tất cả nguyên liệu khoáy đều trừ hỗn hợp matcha - cho ra ly - cho 2,7/3 đá; khoáy hổn hợp matcha : 40m nước sôi - 2g matcha - cho vào ly; Decor chanh và lá húng.
-Trà Thanh nhiệt|TRÀ VẢI HOA HỒNG|Trà lài=100 ml; Syrup vải=40 ml; Nước đường=20 ml; Cốt chanh=10 ml|Cho tất cả nguyên liệu vào shaker.; Thêm đá và lắc đều.; Đổ ra ly.; Decor 3 quả vải,  chanh và lá húng.
-Trà Thanh nhiệt|TRÀ DƯA LƯỚI|Trà lài=100 ml; Mứt dưa lưới=30 ml; Syrup dưa lưới=10 ml; Nước đường=10 ml; Cốt chanh=10 ml|Cho tất cả nguyên liệu vào shaker.; Thêm đá và lắc đều.; Đổ ra ly.; Decor 2 vá trân châu,  chanh và lá húng.
+Trà Thanh nhiệt|TRÀ VẢI HOA HỒNG|Trà lài=100 ml; Syrup vải=40 ml; Nước đường=20 ml; Cốt chanh=10 ml|Cho tất cả nguyên liệu vào shaker.; Thêm đá và lắc đều.; Đổ ra ly.; Decor 3 quả vải, chanh và lá húng.
+Trà Thanh nhiệt|TRÀ DƯA LƯỚI|Trà lài=100 ml; Mứt dưa lưới=30 ml; Syrup dưa lưới=10 ml; Nước đường=10 ml; Cốt chanh=10 ml|Cho tất cả nguyên liệu vào shaker.; Thêm đá và lắc đều.; Đổ ra ly.; Decor 2 vá trân châu, chanh và lá húng.
 Trà Thanh nhiệt|TRÀ TÁO XANH|Trà lài=30 ml; Syrup táo=20 ml; Nước đường=10 ml; nước ép táo=20 ml; Nước lọc=40 ml|Cho tất cả nguyên liệu vào shaker.; Thêm đá và lắc đều.; Đổ ra ly.; Decor 3 lát táo và lá húng.
 Trà Thanh nhiệt|TRÀ DÂU TẰM|Trà lài=100 ml; Mứt dâu tằm=30 ml; Sinh tố dâu tằm=20 ml; Đường nước=15 ml; Tắc=5 ml|Cho tất cả nguyên liệu vào shaker.; Thêm đá và lắc đều.; Đổ ra ly.; Decor 1 vá trân châu, 3 quả dâu tằm và lá húng.
 Trà Thanh nhiệt|TRÀ LÀI ĐÁC THƠM|Trà lài=100 ml; Chanh=10 ml; Nước đường=30 ml; Đác Thơm=2 muỗng|Cho tất cả nguyên liệu vào shaker.; Thêm đá và lắc đều.; Đổ ra ly.; Decor chanh và lá húng.
 Trà Thanh nhiệt|TRÀ MÃNG CẦU HẠT ĐÁC|Trà lài=100 ml; Chanh=10 ml; Nước đường=30 ml; Mứt mãng cầu=30 ml; Hạt đác=10 cục|Cho trà lài, chanh, nước đường và mứt mãng cầu vào shaker.; Thêm đá và lắc đều.; Đổ ra ly.; Cho 10 hạt đác lên trên.; Decor chanh và lá húng.
-Trà Thanh nhiệt|TRÀ MẬN|Trà lài=120 ml; Chanh=10 ml; Nước đường=15 ml; Mứt mận=50 ml|Cho tất cả nguyên liệu vào shaker.; Thêm đá và lắc đều.; Đổ ra ly.; Decor 1 vá trân châu,  chanh và lá húng.
+Trà Thanh nhiệt|TRÀ MẬN|Trà lài=120 ml; Chanh=10 ml; Nước đường=15 ml; Mứt mận=50 ml|Cho tất cả nguyên liệu vào shaker.; Thêm đá và lắc đều.; Đổ ra ly.; Decor 1 vá trân châu, chanh và lá húng.
 Trà Thanh nhiệt|TRÀ THẠCH ĐÀO|Trà cozy đào=2 gói; Nước sôi=130 ml; Nước đường=40 ml; Rich=40 ml; Đào miếng=2 lát; Thạch đào=3 lát|Ngâm 2 gói trà cozy đào với 130ml nước sôi trong 2 phút.; Cho 40ml đường và 80ml trà vào ly rồi khuấy đều.; Cho đá 2/3 ly.; Khuấy 50ml trà còn lại với 40ml Rich rồi rót vào ly.; Decor 2 lát đào và 3 lát thạch.
 Trà Thanh nhiệt|TRÀ SEN VÀNG|Trà olong cầu tre=2 gói; Nước sôi=130 ml; Nước đường=30 ml; Hạt sen=10 hạt; Kem muối=2 muỗng|Ngâm 2 gói olong cầu tre với 130ml nước sôi trong 2 phút.; Làm lạnh cốt oolong.; Cho 10 hạt sen và 30ml đường vào ly.; Cho cốt oolong vào và khuấy đều.; Cho đá 2/3 ly.; Phủ 2 muỗng kem muối.
-Trà Thanh nhiệt|TRÀ GỪNG|Trà=1 gói; Nước sôi=180 ml; Mật ong=15 ml; Gừng=4-5 lát băm nhỏ|Cho gói trà,  mật ong và gừng vào ly.; Rót trà vào ly; Phục vụ nóng
+Trà Thanh nhiệt|TRÀ GỪNG|Trà=1 gói; Nước sôi=180 ml; Mật ong=15 ml; Gừng=4-5 lát băm nhỏ|Cho gói trà, mật ong và gừng vào ly.; Rót trà vào ly; Phục vụ nóng
 Trà Thanh nhiệt|NƯỚC CHANH|Cốt chanh=40 ml; Nước đường=40 ml; Nước lọc=80 ml; Muối=1 g|Cho tất cả nguyên liệu vào shaker.; Thêm đá và lắc đều.; Đổ ra ly.; Decor chanh và lá húng.
 Đá xay & sinh tố|SINH TỐ BƠ|Bơ=200 g; Sữa tươi=50 ml; Sữa đặc=30 ml; Nước đường=20 ml; Đá=150 g|Cho toàn bộ nguyên liệu vào máy xay.; Xay mịn.; Đổ ra ly.; Decor lá húng.
 Đá xay & sinh tố|SINH TỐ XOÀI|Xoài=100 g; Sữa tươi=40 ml; Nước đường=20 ml; Sữa đặc=20 ml; Sirup chanh dây=20 ml; Nước lọc=40 ml; Đá=150 g|Cho toàn bộ nguyên liệu vào máy xay.; Xay mịn.; Đổ ra ly.; Decor xoài cắt hạt lựu và lá húng.
 Đá xay & sinh tố|SINH TỐ DỪA|Cơm dừa=80 g; Sữa đặc=30 ml; Đường nước=20 ml; Sữa tươi=30 ml; Nước dừa=100 ml; Đá=150 g|Cho toàn bộ nguyên liệu vào máy xay.; Xay mịn.; Đổ ra ly.; Decor dừa khô và lá húng.; nước dừa còn dư cho vào ly mang ra cho khách
 Đá xay & sinh tố|BƠ GIÀ DỪA NON|Phần cốt dừa=cốt dừa 60ml, sữa tươi 20ml, sữa đặc 20ml, nước đường 5ml; Phần bơ=bơ 80g, nước lọc 60ml, sữa đặc 30ml, nước đường 5ml|Cho phần cốt dừa nằm dưới đáy ly.; Cho đá 1/2 ly.; Xay phần bơ mịn.; Cho phần bơ lên trên.; Decor dừa khô.
-Đá xay & sinh tố|MATCHA ĐÁ XAY|Bột matcha=8 g; Nước đường=10 ml; Sữa đặc=40 ml; Sữa tươi=60 ml; Bột frap=14 g; Richs=20 ml; Đá=150 g|Cho toàn bộ nguyên liệu vào máy xay.; Xay mịn.; Đổ ra ly.; Cho kem tươi lên trên.; Rắc bột matcha  lên kem.
+Đá xay & sinh tố|MATCHA ĐÁ XAY|Bột matcha=8 g; Nước đường=10 ml; Sữa đặc=40 ml; Sữa tươi=60 ml; Bột frap=14 g; Richs=20 ml; Đá=150 g|Cho toàn bộ nguyên liệu vào máy xay.; Xay mịn.; Đổ ra ly.; Cho kem tươi lên trên.; Rắc bột matcha lên kem.
 Đá xay & sinh tố|CACAO ĐÁ XAY|Cacao=8 g; Nước đường=10 ml; Sữa đặc=40 ml; Sữa tươi=60 ml; Bột frap=14 g; Richs=10 ml; Đá=150 g|Cho toàn bộ nguyên liệu vào máy xay.; Xay mịn.; Đổ ra ly.; Cho kem tươi lên trên.; Rắc bột cacao lên kem.
 Đá xay & sinh tố|MÃNG CẦU TUYẾT|Sữa chua=nữa hủ; Sữa đặc=30 ml; Sữa tươi=50 ml; Bột frap=1 muỗng; Tắc=2 trái; Mứt mãng cầu=50 ml|Cho toàn bộ nguyên liệu vào máy xay.; Xay mịn.; Đổ ra ly.; Decor lá húng và chanh.
 Đá xay & sinh tố|VIỆT QUẤT ĐÁ XAY|Sữa chua=nữa hủ; Sữa đặc=30 ml; Sữa tươi=50 ml; Bột frap=1 muỗng; Tắc=2 trái; Mứt việt quất=50 ml|Cho toàn bộ nguyên liệu vào máy xay.; Xay mịn.; Đổ ra ly.; Decor lá húng và chanh.
